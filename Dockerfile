@@ -41,9 +41,6 @@ COPY resources/views ./resources/views
 COPY routes ./routes
 COPY public/index.php ./public/
 
-# Ensure SQLite exists
-RUN mkdir -p database && touch database/database.sqlite
-
 # Copy frontend build from frontend-builder into Laravel public folder
 COPY --from=frontend-builder /app/dist ./public/dist
 
