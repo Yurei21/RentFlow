@@ -1,0 +1,34 @@
+# Node modules (if any front-end tooling exists)
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+package-lock.json
+
+# Laravel / PHP stuff that shouldn't go into production build
+vendor
+.env
+.env.local
+.env.*.backup
+.phpunit.result.cache
+
+# Logs & cache
+storage/logs
+storage/framework/cache/data
+storage/framework/sessions
+storage/framework/views
+bootstrap/cache/*.php
+
+# IDE/editor configs
+.idea
+.vscode
+*.swp
+*.swo
+*.DS_Store
+
+# Git files
+.git
+.gitignore
+
+# Docker itself (to avoid recursion if you keep images/build files)
+docker-compose.override.yml
