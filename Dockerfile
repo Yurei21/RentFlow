@@ -56,7 +56,8 @@ WORKDIR /var/www/html
 
 # Download Dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev libpng-dev libjpeg-dev libfreetype6-dev
+    libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-install pdo_mysql mbstring bcmath zip gd
 
 # Copy built application
 COPY --from=backend-builder /app /var/www/html
@@ -66,10 +67,6 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Fix permissions (important)
 RUN chmod -R 777 storage bootstrap/cache
-
-# Debug mode (temporary)
-ENV APP_DEBUG=true
-ENV LOG_LEVEL=debug
 
 # Expose Railway port
 EXPOSE 8080
