@@ -11,59 +11,59 @@ COPY resources/js ./resources/js
 COPY resources/css ./resources/css
 COPY public ./public
 
-# Build production assets
+# Build frontend
 ARG VITE_API_URL
-RUN VITE_API_URL=${VITE_API_URL} npm run build
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build
 
-# ---------- Stage 2: Backend Build (Laravel PHP) ----------
+
+# ---------- Stage 2: Laravel Backend Build ----------
 FROM php:8.4-cli AS backend-builder
 WORKDIR /app
 
-# Install PHP system dependencies for Laravel
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    unzip git libzip-dev libonig-dev libpng-dev libxml2-dev \
+    unzip git \
+    libzip-dev libonig-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring bcmath zip gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer files and install dependencies
+# Copy composer files first (better caching)
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copy Laravel app and environment
-COPY app ./app
-COPY bootstrap ./bootstrap
-COPY config ./config
-COPY database ./database
-COPY resources/views ./resources/views
-COPY routes ./routes
-COPY public/index.php ./public/
+# Copy full Laravel project
+COPY . .
 
-# Copy frontend build from frontend-builder into Laravel public folder
+# Copy frontend build into Laravel public folder
 COPY --from=frontend-builder /app/dist ./public/dist
 
-# Cache Laravel configuration for faster runtime
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# IMPORTANT: DO NOT run artisan cache here (causes build failures)
+# config cache should be done at runtime
+
 
 # ---------- Stage 3: Runtime ----------
-FROM php:8.4-fpm AS runner
+FROM php:8.4-cli AS runner
 WORKDIR /var/www/html
 
-# Install runtime PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring bcmath gd
+# Runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring bcmath zip gd
 
-# Copy backend + frontend build from backend-builder
+# Copy built application
 COPY --from=backend-builder /app /var/www/html
 
-# Set permissions for Laravel storage and cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Fix permissions for Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Expose the PORT Railway provides
+# Expose Railway port
 EXPOSE 8080
 
-# Start Laravel using PHP's built-in server for hobby deployment
-# Railway will provide the PORT environment variable
+# Start Laravel (simple PHP server for Railway)
 CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t public"]
