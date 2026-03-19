@@ -23,14 +23,12 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    unzip git \
-    pkg-config \
-    libzip-dev \
-    libonig-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
+    unzip git pkg-config \
+    libzip-dev libonig-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev \
     libxml2-dev \
+    default-mysql-client \
+    libmariadb-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring bcmath zip gd
 
@@ -55,11 +53,9 @@ COPY --from=frontend-builder /app/public/build ./public/build
 FROM php:8.4-cli AS runner
 WORKDIR /var/www/html
 
-# Runtime dependencies
+# Download Dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring bcmath zip gd
+    libzip-dev libpng-dev libjpeg-dev libfreetype6-dev
 
 # Copy built application
 COPY --from=backend-builder /app /var/www/html
