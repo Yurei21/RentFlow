@@ -16,7 +16,7 @@ ARG VITE_API_URL
 RUN VITE_API_URL=${VITE_API_URL} npm run build
 
 # ---------- Stage 2: Backend Build (Laravel PHP) ----------
-FROM php:8.2-cli AS backend-builder
+FROM php:8.4-cli AS backend-builder
 WORKDIR /app
 
 # Install PHP system dependencies for Laravel
@@ -50,7 +50,7 @@ RUN php artisan config:cache \
     && php artisan view:cache
 
 # ---------- Stage 3: Runtime ----------
-FROM php:8.2-fpm-alpine AS runner
+FROM php:8.4-fpm-alpine AS runner
 WORKDIR /var/www/html
 
 # Install runtime PHP extensions
