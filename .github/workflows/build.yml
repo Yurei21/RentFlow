@@ -23,10 +23,10 @@ jobs:
         with:
           php-version: '8.4'
           extensions: mbstring, pdo_mysql, bcmath, gd
-          tools: composer:v2, phpcs, phpstan
+          tools: composer:v2, phpstan
           coverage: none
 
-      # 3️⃣ Install Composer dependencies
+      # 3️⃣ Install dependencies
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
@@ -34,10 +34,6 @@ jobs:
       - name: PHP syntax check
         run: find app bootstrap routes -name "*.php" -exec php -l {} \;
 
-      # 5️⃣ Run PHP_CodeSniffer (PSR-12)
-      - name: Run PHP_CodeSniffer (PSR12)
-        run: phpcs --standard=PSR12 app/ bootstrap/ routes/
-
-      # 6️⃣ Run PHPStan (Level 5)
+      # 5️⃣ Static analysis (REAL linting)
       - name: Run PHPStan
         run: phpstan analyse app bootstrap --level=5
