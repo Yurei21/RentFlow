@@ -24,8 +24,13 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     unzip git \
-    libzip-dev libonig-dev \
-    libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev \
+    pkg-config \
+    libzip-dev \
+    libonig-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring bcmath zip gd
 
