@@ -32,7 +32,6 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader
 
 # Copy Laravel app and environment
-COPY .env ./
 COPY app ./app
 COPY bootstrap ./bootstrap
 COPY config ./config
