@@ -64,6 +64,13 @@ COPY --from=backend-builder /app /var/www/html
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+# Fix permissions (important)
+RUN chmod -R 777 storage bootstrap/cache
+
+# Debug mode (temporary)
+ENV APP_DEBUG=true
+ENV LOG_LEVEL=debug
+
 # Expose Railway port
 EXPOSE 8080
 
