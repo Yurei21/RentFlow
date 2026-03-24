@@ -13,20 +13,20 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('receipt_number')->unique();
-            $table->foreignId('tenant_id')
-                ->constrained('tenants')
+            $table->foreignId('invoice_id')
+                ->constrained('invoices')
                 ->cascadeOnDelete();
-            $table->integer('amount');
-            $table->date('billing_date');
-            $table->date('due_date');
-            $table->enum('status', ['Pending', 'Paid', 'Overdue'])->default('Pending');
-            $table->text('description')->nullable();
+            $table->integer('amount_paid');
+            $table->timestamp('payment_date');
+            $table->enum('payment_method', ['Cash', 'Gcash', 'Bank', 'Online']);
+            $table->string('reference_number')->nullable();
             $table->foreignId('created_by')
-                ->constrained('users');
+                ->constrained('users')
+                ->cascadeOnDelete();
             $table->foreignId('modified_by')
                 ->constrained('users');
             $table->timestamps();
+
         });
     }
 

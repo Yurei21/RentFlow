@@ -27,6 +27,14 @@ class Tenant extends Model
         return $this->belongsTo(Group::class, 'group_id');
     }
 
+    public function invoice() {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function payment() {
+        return $this->hasMany(Payment::class);
+    }
+
     public function createdBy() {
         return $this->belongsTo(User::class, 'created_by');
     }
