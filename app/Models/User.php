@@ -45,4 +45,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function tenants() {
+        return $this->hasMany(Tenant::class, 'created_by');
+    }
+
+    public function rooms() {
+        return $this->hasMany(Room::class, 'created_by');
+    }
 }

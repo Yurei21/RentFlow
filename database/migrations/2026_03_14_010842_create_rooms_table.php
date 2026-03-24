@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('room_name');
             $table->foreignId('group_id')->nullable();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('modified_by')->constrained('users');
             $table->timestamps();
         });
     }
