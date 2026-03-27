@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleController as AuthGoogleController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
@@ -22,6 +24,9 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/group', GroupController::class);
