@@ -25,7 +25,9 @@ return new class extends Migration
             $table->foreignId('created_by')
                 ->constrained('users');
             $table->foreignId('modified_by')
-                ->constrained('users');
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->timestamps();
         });
     }

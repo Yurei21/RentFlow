@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('room_name');
-            $table->foreignId('group_id')->nullable();
+            $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();;
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('modified_by')->constrained('users');
             $table->timestamps();

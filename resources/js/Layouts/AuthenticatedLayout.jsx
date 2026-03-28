@@ -1,176 +1,355 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import ApplicationLogo from "@/Components/ApplicationLogo";
+import Dropdown from "@/Components/Dropdown";
+import NavLink from "@/Components/NavLink";
+import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
+import { Link, usePage, router } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+
+const NAV_ITEMS = [
+    { label: "Dashboard", route: "dashboard" },
+    { label: "Tenants", route: "tenant.index" },
+    { label: "Rooms", route: "room.index" },
+    { label: "Invoices", route: "invoice.index" },
+    { label: "Payments", route: "payment.index" },
+    { label: "Group", route: "group.index" },
+];
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+    const [navigating, setNavigating] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [mounted, setMounted] = useState(false);
+
+    const initials = user.name
+        ?.split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+
+    // Mount animation
+    useEffect(() => {
+        const t = setTimeout(() => setMounted(true), 10);
+        return () => clearTimeout(t);
+    }, []);
+
+    // Page load progress bar
+    useEffect(() => {
+        const startProgress = () => {
+            setNavigating(true);
+            setProgress(15);
+        };
+        const finishProgress = () => {
+            setProgress(100);
+            setTimeout(() => {
+                setNavigating(false);
+                setProgress(0);
+            }, 400);
+        };
+
+        const removeStart = router.on("start", startProgress);
+        const removeFinish = router.on("finish", finishProgress);
+
+        return () => {
+            removeStart();
+            removeFinish();
+        };
+    }, []);
+
+    // Simulate progress ticking while navigating
+    useEffect(() => {
+        if (!navigating) return;
+        const interval = setInterval(() => {
+            setProgress((p) => {
+                if (p >= 85) return p;
+                return p + Math.random() * 8;
+            });
+        }, 300);
+        return () => clearInterval(interval);
+    }, [navigating]);
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <nav className="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800">
+        <div
+            className={[
+                "min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950",
+                "transition-opacity duration-500",
+                mounted ? "opacity-100" : "opacity-0",
+            ].join(" ")}
+        >
+            {/* ── Progress bar ────────────────────────────────────────────── */}
+            <div
+                className={[
+                    "fixed top-0 left-0 z-[100] h-[2.5px] bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-400",
+                    "transition-all duration-300 ease-out rounded-r-full shadow-sm shadow-blue-400/60",
+                    navigating ? "opacity-100" : "opacity-0",
+                ].join(" ")}
+                style={{ width: `${progress}%` }}
+            />
+
+            {/* ── NAV ─────────────────────────────────────────────────────── */}
+            <nav
+                className={[
+                    "sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-blue-100/60 dark:border-blue-900/30",
+                    "transition-transform duration-500 ease-out",
+                    mounted ? "translate-y-0" : "-translate-y-full",
+                ].join(" ")}
+            >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                                </Link>
-                            </div>
-
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
-                                            >
-                                                {user.name}
-
-                                                <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
-
-                                    <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
-                                            Profile
-                                        </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <div className="-me-2 flex items-center sm:hidden">
-                            <button
-                                onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (previousState) => !previousState,
-                                    )
-                                }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
+                    <div className="flex h-16 items-center justify-between gap-4">
+                        {/* Logo + desktop links */}
+                        <div className="flex items-center gap-6 min-w-0">
+                            <Link
+                                href="/"
+                                className="shrink-0 group flex items-center gap-2.5"
                             >
-                                <svg
-                                    className="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
+                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 shadow-md shadow-blue-500/30 transition-all duration-200 group-hover:scale-95 group-hover:shadow-blue-500/50 group-hover:shadow-lg">
+                                    <ApplicationLogo className="h-4 w-4 text-white" />
+                                </div>
+                                <span className="hidden sm:inline text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent tracking-tight transition-opacity duration-200 group-hover:opacity-80">
+                                    RentFlow
+                                </span>
+                            </Link>
+
+                            {/* Desktop nav links */}
+                            <div className="hidden md:flex items-center gap-0.5">
+                                {NAV_ITEMS.map(({ label, route: r }, i) => (
+                                    <NavLink
+                                        key={r}
+                                        href={route(r)}
+                                        active={route().current(r)}
+                                        style={{
+                                            transitionDelay: mounted
+                                                ? `${i * 40}ms`
+                                                : "0ms",
+                                        }}
+                                        className={[
+                                            "px-3 py-1.5 rounded-lg text-[13px] font-medium",
+                                            "transition-all duration-200 ease-out",
+                                            "hover:-translate-y-px active:translate-y-0 active:scale-95",
+                                            mounted
+                                                ? "opacity-100 translate-y-0"
+                                                : "opacity-0 translate-y-1",
+                                            route().current(r)
+                                                ? "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-900/40 shadow-sm shadow-blue-100 dark:shadow-blue-900/30"
+                                                : "text-gray-600 hover:text-blue-700 hover:bg-blue-50/70 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-blue-900/30",
+                                        ].join(" ")}
+                                    >
+                                        {label}
+                                    </NavLink>
+                                ))}
+                            </div>
                         </div>
+
+                        {/* Right: user dropdown (desktop) */}
+                        <div
+                            className={[
+                                "hidden md:flex items-center",
+                                "transition-all duration-500 delay-300 ease-out",
+                                mounted
+                                    ? "opacity-100 translate-x-0"
+                                    : "opacity-0 translate-x-4",
+                            ].join(" ")}
+                        >
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <button
+                                        type="button"
+                                        className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-100 dark:border-blue-800/50 transition-all duration-200 text-sm text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md hover:shadow-blue-100 dark:hover:shadow-blue-900/30 active:scale-95"
+                                    >
+                                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-[11px] font-bold shadow-sm shadow-blue-500/40">
+                                            {initials}
+                                        </span>
+                                        <span className="hidden sm:inline max-w-[140px] truncate">
+                                            {user.name}
+                                        </span>
+                                        <svg
+                                            className="h-3.5 w-3.5 text-blue-400 dark:text-blue-500 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </button>
+                                </Dropdown.Trigger>
+
+                                <Dropdown.Content
+                                    align="right"
+                                    width="48"
+                                    contentClasses="py-1 bg-white dark:bg-gray-900 rounded-xl shadow-xl shadow-blue-500/10 border border-blue-100/80 dark:border-blue-900/40 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150"
+                                >
+                                    <div className="px-3 py-2.5 border-b border-blue-100/60 dark:border-blue-900/30 mb-1">
+                                        <p className="text-[11px] font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                                            Account
+                                        </p>
+                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mt-0.5">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                    <Dropdown.Link
+                                        href={route("profile.edit")}
+                                        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 rounded-lg mx-1 transition-all duration-150 hover:translate-x-0.5"
+                                    >
+                                        Profile
+                                    </Dropdown.Link>
+                                    <Dropdown.Link
+                                        href={route("logout")}
+                                        method="post"
+                                        as="button"
+                                        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg mx-1 mb-1 transition-all duration-150 hover:translate-x-0.5"
+                                    >
+                                        Log Out
+                                    </Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
+                        </div>
+
+                        {/* Mobile hamburger */}
+                        <button
+                            onClick={() =>
+                                setShowingNavigationDropdown((p) => !p)
+                            }
+                            className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200 active:scale-90"
+                            aria-label="Toggle navigation"
+                        >
+                            {/* Animated hamburger → X */}
+                            <div className="relative w-5 h-5">
+                                <span
+                                    className={[
+                                        "absolute left-0 w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-in-out",
+                                        showingNavigationDropdown
+                                            ? "top-[9px] rotate-45"
+                                            : "top-[3px] rotate-0",
+                                    ].join(" ")}
+                                />
+                                <span
+                                    className={[
+                                        "absolute left-0 top-[9px] w-full h-0.5 bg-current rounded-full transition-all duration-200 ease-in-out",
+                                        showingNavigationDropdown
+                                            ? "opacity-0 scale-x-0"
+                                            : "opacity-100 scale-x-100",
+                                    ].join(" ")}
+                                />
+                                <span
+                                    className={[
+                                        "absolute left-0 w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-in-out",
+                                        showingNavigationDropdown
+                                            ? "top-[9px] -rotate-45"
+                                            : "top-[15px] rotate-0",
+                                    ].join(" ")}
+                                />
+                            </div>
+                        </button>
                     </div>
                 </div>
 
+                {/* ── Mobile menu ──────────────────────────────────────────── */}
                 <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
+                    className={[
+                        "md:hidden border-t border-blue-100/60 dark:border-blue-900/30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl",
+                        "overflow-hidden transition-all duration-300 ease-in-out",
+                        showingNavigationDropdown
+                            ? "max-h-[600px] opacity-100"
+                            : "max-h-0 opacity-0",
+                    ].join(" ")}
                 >
-                    <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
+                    {/* Mobile user card */}
+                    <div className="flex items-center gap-3 px-4 py-4 border-b border-blue-100/60 dark:border-blue-900/30">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-sm font-bold shadow-md shadow-blue-500/30">
+                            {initials}
+                        </span>
+                        <div className="min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
+                                {user.name}
+                            </p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                                {user.email}
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800 dark:text-gray-200">
-                                {user.name}
-                            </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user.email}
-                            </div>
-                        </div>
-
-                        <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
-                            </ResponsiveNavLink>
+                    {/* Mobile nav items — stagger via inline delay */}
+                    <div className="px-3 py-3 space-y-0.5">
+                        {NAV_ITEMS.map(({ label, route: r }, i) => (
                             <ResponsiveNavLink
-                                method="post"
-                                href={route('logout')}
-                                as="button"
+                                key={r}
+                                href={route(r)}
+                                active={route().current(r)}
+                                style={{
+                                    transitionDelay: showingNavigationDropdown
+                                        ? `${i * 35}ms`
+                                        : "0ms",
+                                }}
+                                className={[
+                                    "block px-3 py-2.5 rounded-lg text-sm font-medium",
+                                    "transition-all duration-200 ease-out",
+                                    "hover:translate-x-1 active:scale-95",
+                                    showingNavigationDropdown
+                                        ? "opacity-100 translate-x-0"
+                                        : "opacity-0 -translate-x-2",
+                                    route().current(r)
+                                        ? "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
+                                        : "text-gray-600 dark:text-gray-400 hover:bg-blue-50/70 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400",
+                                ].join(" ")}
                             >
-                                Log Out
+                                {label}
                             </ResponsiveNavLink>
-                        </div>
+                        ))}
+                    </div>
+
+                    {/* Mobile account actions */}
+                    <div className="px-3 pb-4 pt-1 border-t border-blue-100/60 dark:border-blue-900/30 mt-1 space-y-0.5">
+                        <ResponsiveNavLink
+                            href={route("profile.edit")}
+                            className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-blue-50/70 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 hover:translate-x-1"
+                        >
+                            Profile
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            method="post"
+                            href={route("logout")}
+                            as="button"
+                            className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-200 hover:translate-x-1"
+                        >
+                            Log Out
+                        </ResponsiveNavLink>
                     </div>
                 </div>
             </nav>
 
+            {/* ── Page header ─────────────────────────────────────────────── */}
             {header && (
-                <header className="bg-white shadow dark:bg-gray-800">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <header
+                    className={[
+                        "bg-white/60 dark:bg-gray-800/30 backdrop-blur-sm border-b border-blue-100/60 dark:border-blue-900/20",
+                        "transition-all duration-500 delay-200 ease-out",
+                        mounted
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 -translate-y-1",
+                    ].join(" ")}
+                >
+                    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
                         {header}
                     </div>
                 </header>
             )}
 
-            <main>{children}</main>
+            {/* ── Main content ─────────────────────────────────────────────── */}
+            <main
+                className={[
+                    "transition-all duration-500 delay-300 ease-out",
+                    mounted
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-2",
+                ].join(" ")}
+            >
+                {children}
+            </main>
         </div>
     );
 }
