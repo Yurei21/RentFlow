@@ -11,7 +11,7 @@ class UpdateRoomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "room_name" => ['required', 'max:100'],
+            "group_id" => ['nullable', 'exists:group,id']
         ];
     }
 }

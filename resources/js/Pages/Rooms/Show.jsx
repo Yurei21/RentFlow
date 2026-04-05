@@ -149,7 +149,7 @@ export default function Show({ room, tenants, queryParams = null }) {
                                     <span className="font-semibold">
                                         {room.group
                                             ? room.group.group_name
-                                            : "Solo Room"}
+                                            : "No Group"}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">

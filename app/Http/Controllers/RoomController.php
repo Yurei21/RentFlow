@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
 use App\Http\Resources\RoomResource;
 use App\Http\Resources\TenantResource;
+use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
@@ -18,7 +19,7 @@ class RoomController extends Controller
     {
         $user = Auth::user();
 
-        $query = Room::query()->with('group.users')->where(function ($q) use ($user) {
+        $query = Room::query()->with(['group.users', 'createdBy', 'updatedBy'])->where(function ($q) use ($user) {
             $q->where('created_by', $user->id)->orWhereHas('group.users', function ($q2) use ($user) {
                 $q2->where('user_id', $user->id);
             });
@@ -27,11 +28,11 @@ class RoomController extends Controller
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
 
-        if(request("search")){
+        if (request("search")) {
             $query->where("room_name", "like", "%" . request("search") . "%");
         }
 
-        $rooms = $query->orderBy($sortField, $sortDirection)->paginate(9)->onEachSide(1 );
+        $rooms = $query->orderBy($sortField, $sortDirection)->paginate(9)->onEachSide(1);
 
         return inertia("Rooms/Index", [
             'rooms' => RoomResource::collection($rooms),
@@ -45,7 +46,9 @@ class RoomController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+        $groups = Group::where('created_by', $user->id)->get();
+        return inertia("Rooms/Create", ['groups' => $groups]);
     }
 
     /**
@@ -53,7 +56,13 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
-        //
+        $data = $request->validated();
+        $data['created_by'] = Auth::id();
+        $data['modified_by'] = Auth::id();
+
+        Room::create($data);
+
+        return to_route('room.index')->with('success', 'Room was created');
     }
 
     /**
@@ -68,10 +77,10 @@ class RoomController extends Controller
         $sortDirection = request("sort_direction", "desc");
 
         if (request("tenant_name")) {
-            $query->where("tenant_name", "like", "%". request("tenant_name"). "%");
+            $query->where("tenant_name", "like", "%" . request("tenant_name") . "%");
         }
 
-        if(request("is_active")) {
+        if (request("is_active")) {
             $query->where("is_active", request("is_active"));
         }
 
@@ -89,7 +98,15 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        //
+        $this->authorizeRoomOwner($room, true);
+
+        $user = Auth::user();
+        $availableGroups = Group::where('created_by', $user->id)->get();
+
+        return inertia('Rooms/Edit', [
+            'room' => new RoomResource($room),
+            'availableGroups' => $availableGroups
+        ]);
     }
 
     /**
@@ -97,7 +114,14 @@ class RoomController extends Controller
      */
     public function update(UpdateRoomRequest $request, Room $room)
     {
-        //
+        $this->authorizeRoomOwner($room, true);
+
+        $data = $request->validated();
+        $data['modified_by'] = Auth::id();
+
+        $room->update($data);
+
+        return to_route('room.index')->with('success', 'Room was updated');
     }
 
     /**
@@ -111,20 +135,21 @@ class RoomController extends Controller
     /**
      * For Authorization
      */
-    private function authorizeRoomOwner(Room $room, $asOwner = false){
+    private function authorizeRoomOwner(Room $room, $asOwner = false)
+    {
         $user = Auth::user();
-        
+
         if (!$room->group_id) {
-            if($asOwner && $room->created_by !== $user->id) {
+            if ($asOwner && $room->created_by !== $user->id) {
                 abort(403, 'Only the owner can perform this action.');
             }
-            
+
             if (!$asOwner && $room->created_by !== $user->id) {
                 abort(403, 'You do not have access to this solo room.');
             }
         }
 
-        if($room->group_id) {
+        if ($room->group_id) {
             $isMember = $room->group->users()->where('user_id', $user->id)->exists();
 
             if (!$isMember) {

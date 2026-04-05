@@ -10,7 +10,6 @@ export default function Index({ rooms, queryParams = null, success }) {
 
     const [showSuccess, setShowSuccess] = useState(!!success);
     const [searchTerm, setSearchTerm] = useState(queryParams.search || "");
-    console.log(rooms)
     useEffect(() => {
         if (showSuccess) {
             const timer = setTimeout(() => {
