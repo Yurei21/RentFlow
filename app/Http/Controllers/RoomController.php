@@ -161,7 +161,7 @@ class RoomController extends Controller
                 abort(403, 'you are not a member of this room');
             }
 
-            if ($asOwner && $room->group->owner_id !== $user->id && $room->created_by !== $user->id) {
+            if ($asOwner && $room->group->created_by !== $user->id && $room->created_by !== $user->id) {
                 abort(403, 'Only the room creatorr can perform this action.');
             }
         }

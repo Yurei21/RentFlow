@@ -21,9 +21,9 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, pdo_mysql, bcmath, gd
-          tools: composer:v2, phpstan
+          tools: composer:v2
           coverage: none
 
       # 3️⃣ Install dependencies
@@ -34,6 +34,6 @@ jobs:
       - name: PHP syntax check
         run: find app bootstrap routes -name "*.php" -exec php -l {} \;
 
-      # 5️⃣ Static analysis (REAL linting)
-      - name: Run PHPStan
+      # 5️⃣ Static analysis with Larastan
+      - name: Run Larastan
         run: vendor/bin/phpstan analyse --configuration=phpstan.neon

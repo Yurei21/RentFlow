@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property Group $group
+ * @property User $createdBy
+ * @property User $updatedBy
+ */
 class Room extends Model
 {
     /** @use HasFactory<\Database\Factories\RoomFactory> */
@@ -23,20 +28,24 @@ class Room extends Model
         'created_by',
         'modified_by'
     ];
-    
-    public function group(): BelongsTo {
+
+    public function group(): BelongsTo
+    {
         return $this->belongsTo(Group::class, 'group_id');
     }
 
-    public function tenants(): HasMany {
+    public function tenants(): HasMany
+    {
         return $this->hasMany(Tenant::class, 'room_id');
     }
 
-    public function createdBy(): BelongsTo {
+    public function createdBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy(): BelongsTo {
+    public function updatedBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'modified_by');
     }
 }
