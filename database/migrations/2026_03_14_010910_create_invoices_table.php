@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')
                   ->constrained('tenants')
                   ->cascadeOnDelete();
-            $table->integer('amount');
+            $table->decimal('amount', 10, 2);
             $table->date('billing_date');
             $table->date('due_date');
             $table->enum('status', ['Pending', 'Paid', 'Overdue'])

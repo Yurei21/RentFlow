@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
+use Illuminate\Support\Facades\Auth;
 
 class TenantController extends Controller
 {
@@ -13,7 +14,7 @@ class TenantController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -62,5 +63,31 @@ class TenantController extends Controller
     public function destroy(Tenant $tenant)
     {
         //
+    }
+    private function authorizeTenantOwner(Tenant $tenant, $asOwner = false)
+    {
+        $user = Auth::user();
+
+        if (!$tenant->group_id) {
+            if ($asOwner && $tenant->created_by !== $user->id) {
+                abort(403, 'Only the owner can perform this action.');
+            }
+
+            if (!$asOwner && $tenant->created_by !== $user->id) {
+                abort(403, 'You do not have access to this solo tenant.');
+            }
+        }
+
+        if ($tenant->group_id) {
+            $isMember = $tenant->group->users()->where('user_id', $user->id)->exists();
+
+            if (!$isMember) {
+                abort(403, 'you are not a member of this tenant');
+            }
+
+            if ($asOwner && $tenant->group->owner_id !== $user->id && $tenant->created_by !== $user->id) {
+                abort(403, 'Only the tenant creatorr can perform this action.');
+            }
+        }
     }
 }

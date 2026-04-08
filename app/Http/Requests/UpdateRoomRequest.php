@@ -23,6 +23,11 @@ class UpdateRoomRequest extends FormRequest
     {
         return [
             "room_name" => ['required', 'max:100'],
+            "monthly_price" => ['required', 'numeric', 'decimal:0,2'],
+            "room_type" => ['nullable', 'string', 'max:255'],
+            "capacity" => ['required', 'integer', 'min:1'],
+            "description" => ['nullable', 'string', 'max:1000'],
+            "status" => ['required', 'in:available,occupied,maintenance'],
             "group_id" => ['nullable', 'exists:group,id']
         ];
     }

@@ -129,7 +129,12 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        //
+        $this->authorizeRoomOwner($room, true);
+
+        $name = $room->room_name;
+
+        $room->delete();
+        return to_route('room.index')->with('success', "Room \"$name\" was deleted");
     }
 
     /**

@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('room_name');
+            $table->decimal('monthly_price', 10, 2)->nullable();
+            $table->string('room_type')->nullable();
+            $table->integer('capacity')->default(1);
+            $table->text('description')->nullable();
+            $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available');
             $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();;
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('modified_by')->constrained('users');

@@ -133,17 +133,63 @@ export default function Show({ room, tenants, queryParams = null }) {
                             </div>
                         </div>
                         <div className="p-8 text-gray-900 dark:text-gray-100">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                                         Room ID
                                     </span>
                                     <span className="font-semibold">
                                         #{room.id}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                        Monthly Price
+                                    </span>
+                                    <span className="font-semibold">
+                                        PHP {room.monthly_price}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                        Room Type
+                                    </span>
+                                    <span className="font-semibold">
+                                        {room.room_type}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                        Capacity
+                                    </span>
+                                    <span className="font-semibold">
+                                        {room.capacity}{" "}
+                                        {room.capacity === 1
+                                            ? "person"
+                                            : "people"}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                        Status
+                                    </span>
+                                    <span
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold w-fit ${
+                                            room.status === "available"
+                                                ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                                                : room.status === "occupied"
+                                                  ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                                        }`}
+                                    >
+                                        {room.status.charAt(0).toUpperCase() +
+                                            room.status.slice(1)}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                                         Group
                                     </span>
                                     <span className="font-semibold">
@@ -152,8 +198,8 @@ export default function Show({ room, tenants, queryParams = null }) {
                                             : "No Group"}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                                         Last Modified
                                     </span>
                                     <span className="font-semibold">
@@ -167,6 +213,16 @@ export default function Show({ room, tenants, queryParams = null }) {
                                     </span>
                                 </div>
                             </div>
+                            {room.description && (
+                                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                                        Description
+                                    </span>
+                                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                        {room.description}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

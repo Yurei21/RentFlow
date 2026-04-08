@@ -10,6 +10,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property int $id
  * @property string $room_name
+ * @property double $monthly_price
+ * @property string $room_type
+ * @property int $capacity
+ * @property string $description
+ * @property string $status
  * @property Room $group
  * @property string $created_at
  * @property string $updated_at
@@ -29,6 +34,11 @@ class RoomResource extends JsonResource
         return [
             'id' => $this->id,
             'room_name' => $this->room_name,
+            'monthly_price' => $this->monthly_price,
+            'room_type' => $this->room_type,
+            'capacity' => $this->capacity,
+            'description' => $this->description,
+            'status' => $this->status,
             'group' => $this->group,
             'created_by' => new UserResource($this->createdBy),
             'modified_by' => new UserResource($this->updatedBy),
