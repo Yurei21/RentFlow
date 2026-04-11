@@ -15,8 +15,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property boolean $is_active
  * @property string $created_at
  * @property string $updated_at
- * @property string $created_by
- * @property string $modified_by
+ * @property \App\Models\User $createdBy
+ * @property \App\Models\User $updatedBy
  */
 class TenantResource extends JsonResource
 {

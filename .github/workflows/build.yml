@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint:
-    name: PHP Lint & Code Quality
+    name: Code Quality
     runs-on: ubuntu-latest
 
     steps:

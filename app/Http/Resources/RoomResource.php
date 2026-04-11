@@ -18,8 +18,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property Room $group
  * @property string $created_at
  * @property string $updated_at
- * @property string $created_by
- * @property string $modified_by
+ * @property \App\Models\User $createdBy
+ * @property \App\Models\User $updatedBy
  */
 class RoomResource extends JsonResource
 {

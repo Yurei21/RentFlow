@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
+use App\Http\Resources\TenantResource;
+use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 
 class TenantController extends Controller
@@ -12,9 +14,30 @@ class TenantController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() 
     {
-        
+        $user = Auth::user();
+
+        $query = Tenant::query()->with(['group.users', 'createdBy', 'updatedBy'])->where(function ($q) use ($user) {
+            $q->where('created_by', $user->id)->orWhereHas('group.users', function ($q2) use ($user) {
+                $q2->where('user_id', $user->id);
+            });
+        });
+
+        $sortField = request("sort_field", "created_at");
+        $sortDirection = request("sort_direction", "desc");
+
+        if(request("search")) {
+            $query->where("tenant_name", "like", "%" . request("search") . "%");
+        }
+
+        $tenants = $query->orderBy($sortField, $sortDirection)->paginate(20)->onEachSide(1);
+
+        return inertia("Tenants/Index", [
+            'tenants' => TenantResource::collection($tenants),
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success'),
+        ]);
     }
 
     /**
@@ -22,7 +45,11 @@ class TenantController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+        $groups = Group::where('created_by', $user->id)->get();
+        return inertia("Tenants/Create", [
+            'groups' => $groups
+        ]); 
     }
 
     /**
@@ -78,14 +105,16 @@ class TenantController extends Controller
             }
         }
 
-        if ($tenant->group_id) {
-            $isMember = $tenant->group->users()->where('user_id', $user->id)->exists();
+        if ($tenant->group_id && $tenant->group) {
+            /** @var \App\Models\Group $group */
+            $group = $tenant->group;
+            $isMember = $group->users()->where('user_id', $user->id)->exists();
 
             if (!$isMember) {
                 abort(403, 'you are not a member of this tenant');
             }
 
-            if ($asOwner && $tenant->group->owner_id !== $user->id && $tenant->created_by !== $user->id) {
+            if ($asOwner && $group->created_by !== $user->id && $tenant->created_by !== $user->id) {
                 abort(403, 'Only the tenant creatorr can perform this action.');
             }
         }

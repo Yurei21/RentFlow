@@ -7,9 +7,14 @@ import Pagination from "@/Components/Pagination";
 
 export default function Index({ rooms, queryParams = null, success }) {
     queryParams = queryParams || {};
-
     const [showSuccess, setShowSuccess] = useState(!!success);
     const [searchTerm, setSearchTerm] = useState(queryParams.search || "");
+    const [sortField, setSortField] = useState(
+        queryParams.sort_field || "created_at",
+    );
+    const [sortDirection, setSortDirection] = useState(
+        queryParams.sort_direction || "desc",
+    );
     useEffect(() => {
         if (showSuccess) {
             const timer = setTimeout(() => {
@@ -19,7 +24,7 @@ export default function Index({ rooms, queryParams = null, success }) {
             return () => clearTimeout(timer);
         }
     }, [showSuccess]);
-
+    
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -28,6 +33,31 @@ export default function Index({ rooms, queryParams = null, success }) {
         }
 
         router.get(route("room.index"), queryParams);
+    };
+
+    const handleSortChange = (field, direction = null) => {
+        const newDirection = direction !== null ? direction : sortDirection;
+        setSortField(field);
+        setSortDirection(newDirection);
+
+        const newParams = {
+            ...queryParams,
+            sort_field: field,
+            sort_direction: newDirection,
+        };
+        router.get(route("room.index"), newParams);
+    };
+
+    const toggleSortDirection = () => {
+        const newDirection = sortDirection === "desc" ? "asc" : "desc";
+        setSortDirection(newDirection);
+
+        const newParams = {
+            ...queryParams,
+            sort_field: sortField,
+            sort_direction: newDirection,
+        };
+        router.get(route("room.index"), newParams);
     };
 
     const onKeyPress = (name, e) => {
@@ -101,30 +131,71 @@ export default function Index({ rooms, queryParams = null, success }) {
 
                     {/* Search Bar */}
                     <div className="mb-8">
-                        <div className="relative">
-                            <svg
-                                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        <div className="flex gap-4 flex-col sm:flex-row">
+                            {/* Search Input */}
+                            <div className="flex-1 relative">
+                                <svg
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                    />
+                                </svg>
+                                <TextInput
+                                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/50 transition-all"
+                                    placeholder="Search rooms by name..."
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    onKeyPress={(e) => {
+                                        onKeyPress("search", e);
+                                        setSearchTerm(e.target.value);
+                                    }}
                                 />
-                            </svg>
-                            <TextInput
-                                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/50 transition-all"
-                                placeholder="Search rooms by name..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyPress={(e) => {
-                                    onKeyPress("search", e);
-                                    setSearchTerm(e.target.value);
-                                }}
-                            />
+                            </div>
+
+                            {/* Sort Field Dropdown */}
+                            <select
+                                value={sortField}
+                                onChange={(e) =>
+                                    handleSortChange(e.target.value)
+                                }
+                                className="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/50 transition-all font-medium"
+                            >
+                                <option value="created_at">Created</option>
+                                <option value="room_name">Room Name</option>
+                                <option value="monthly_price">Price</option>
+                                <option value="capacity">Capacity</option>
+                                <option value="status">Status</option>
+                            </select>
+
+                            {/* Sort Direction Toggle */}
+                            <button
+                                onClick={toggleSortDirection}
+                                className="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 transition-all font-medium flex items-center gap-2 whitespace-nowrap"
+                            >
+                                <svg
+                                    className={`w-5 h-5 transition-transform ${sortDirection === "asc" ? "" : "rotate-180"}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zM3 16a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"
+                                    />
+                                </svg>
+                                {sortDirection === "asc" ? "A-Z" : "Z-A"}
+                            </button>
                         </div>
                     </div>
 
