@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Group;
+use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 
 class TenantController extends Controller
@@ -47,8 +48,10 @@ class TenantController extends Controller
     {
         $user = Auth::user();
         $groups = Group::where('created_by', $user->id)->get();
+        $rooms = Room::where('created_by', $user->id)->get();
         return inertia("Tenants/Create", [
-            'groups' => $groups
+            'groups' => $groups,
+            'rooms' => $rooms
         ]); 
     }
 
@@ -57,7 +60,13 @@ class TenantController extends Controller
      */
     public function store(StoreTenantRequest $request)
     {
-        //
+        $data = $request->validated();
+        $data['created_by'] = Auth::id();
+        $data['modified_by'] = Auth::id();
+
+        Tenant::create($data);
+
+        return to_route('tenant.index')->with('success', 'Tenant was created');
     }
 
     /**

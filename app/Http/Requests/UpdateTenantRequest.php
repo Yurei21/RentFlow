@@ -11,7 +11,7 @@ class UpdateTenantRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdateTenantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "tenant_name" => ['required', 'max:100'],
+            "is_active" => ['required', 'boolean'],
+            "room_id" => ['required', 'exists:rooms,id'],
+            "group_id" => ['nullable', 'exists:groups,id']
         ];
     }
 }

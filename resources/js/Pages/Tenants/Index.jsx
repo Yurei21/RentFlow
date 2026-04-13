@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import TextInput from "@/Components/TextInput";
 import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
 import Pagination from "@/Components/Pagination";
+import Modal from "@/Components/Modal";
 
 export default function Index({ tenants, queryParams = null, success }) {
     queryParams = queryParams || {};
@@ -15,6 +16,8 @@ export default function Index({ tenants, queryParams = null, success }) {
     const [sortDirection, setSortDirection] = useState(
         queryParams.sort_direction || "desc",
     );
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [tenantToDelete, setTenantToDelete] = useState(null);
     useEffect(() => {
         if (showSuccess) {
             const timer = setTimeout(() => {
@@ -66,20 +69,26 @@ export default function Index({ tenants, queryParams = null, success }) {
         searchFieldChanged(name, e.target.value);
     };
 
-    const deleteTenant = (tenant) => {
-        if (
-            !window.confirm(
-                `Are you sure you want to delete tenant "${tenant.tenant_name}"?`,
-            )
-        ) {
-            return;
-        }
+    const openDeleteModal = (tenant) => {
+        setTenantToDelete(tenant);
+        setShowDeleteModal(true);
+    };
 
-        router.visit(route("tenant.destroy", tenant.id), {
+    const confirmDelete = () => {
+        if (!tenantToDelete) return;
+
+        router.visit(route("tenant.destroy", tenantToDelete.id), {
             method: "delete",
             preserveScroll: true,
             preserveState: false,
         });
+        setShowDeleteModal(false);
+        setTenantToDelete(null);
+    };
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+        setTenantToDelete(null);
     };
 
     return (
@@ -273,7 +282,7 @@ export default function Index({ tenants, queryParams = null, success }) {
                                                             </Link>
                                                             <button
                                                                 onClick={() =>
-                                                                    deleteTenant(
+                                                                    openDeleteModal(
                                                                         tenant,
                                                                     )
                                                                 }
@@ -342,6 +351,47 @@ export default function Index({ tenants, queryParams = null, success }) {
                     )}
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onClose={closeDeleteModal} maxWidth="md">
+                <div className="p-6">
+                    <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
+                        <svg
+                            className="w-6 h-6 text-red-600 dark:text-red-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+                        Delete Tenant
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-6">
+                        Are you sure you want to delete tenant "<strong>{tenantToDelete?.tenant_name}</strong>"? This action cannot be undone.
+                    </p>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={closeDeleteModal}
+                            className="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium transition-all"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmDelete}
+                            className="flex-1 px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white font-medium transition-all"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

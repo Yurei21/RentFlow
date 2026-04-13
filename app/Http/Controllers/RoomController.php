@@ -105,7 +105,7 @@ class RoomController extends Controller
 
         return inertia('Rooms/Edit', [
             'room' => new RoomResource($room),
-            'availableGroups' => $availableGroups
+            'groups' => $availableGroups
         ]);
     }
 
