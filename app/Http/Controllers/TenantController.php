@@ -74,7 +74,7 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        //
+        
     }
 
     /**
@@ -82,7 +82,17 @@ class TenantController extends Controller
      */
     public function edit(Tenant $tenant)
     {
-        //
+        $this->authorizeTenantOwner($tenant, true);
+
+        $user = Auth::user();
+        $availableGroups = Group::where('created_by', $user->id)->get();
+        $availableRooms = Room::where('status', 'available')->get();
+
+        return inertia('Tenants/Edit', [
+            'tenant' => new TenantResource($tenant),
+            'groups' => $availableGroups,
+            'rooms' => $availableRooms
+        ]);
     }
 
     /**
@@ -98,7 +108,13 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
-        //
+        $this->authorizeTenantOwner($tenant, true);
+
+        $name = $tenant->tenant_name;
+
+        $tenant->delete();
+
+        return to_route('tenant.index')->with('success', "Tenant \"$name\" was deleted");
     }
     private function authorizeTenantOwner(Tenant $tenant, $asOwner = false)
     {
