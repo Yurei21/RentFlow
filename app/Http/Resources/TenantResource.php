@@ -33,7 +33,7 @@ class TenantResource extends JsonResource
             'tenant_name' => $this->tenant_name,
             'is_active' => $this->is_active,
             'room' => new RoomResource($this->room),
-            'group' => $this->group,
+            'group_id' => $this->group,
             'created_by' => new UserResource($this->createdBy),
             'modified_by' => new UserResource($this->updatedBy),
             'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),

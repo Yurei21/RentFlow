@@ -29,11 +29,11 @@ class Tenant extends Model
         return $this->belongsTo(Group::class, 'group_id');
     }
 
-    public function invoice(): HasMany {
+    public function invoices(): HasMany {
         return $this->hasMany(Invoice::class);
     }
 
-    public function payment(): HasMany {
+    public function payments(): HasMany {
         return $this->hasMany(Payment::class);
     }
 

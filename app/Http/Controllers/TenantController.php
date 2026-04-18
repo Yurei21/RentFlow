@@ -74,7 +74,13 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        
+        $this->authorizeTenantOwner($tenant);
+
+        $query1 = $tenant->invoices();
+        $query2 = $tenant->payments();
+        $sortField = request("sort_field", "created_at");
+        $sortDirection = request("sort_direction", "desc");
+
     }
 
     /**
@@ -100,7 +106,13 @@ class TenantController extends Controller
      */
     public function update(UpdateTenantRequest $request, Tenant $tenant)
     {
-        //
+        $this->authorizeTenantOwner($tenant, true);
+        $data = $request->validated();
+        $data['modified_by'] = Auth::id();
+
+        $tenant->update($data);
+
+        return to_route('tenant.index')->with('success', 'Tenant was successfully updated');
     }
 
     /**
