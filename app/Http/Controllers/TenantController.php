@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\InvoiceResource;
 use App\Models\Tenant;
 use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
+use App\Http\Resources\PaymentResource;
 use App\Http\Resources\TenantResource;
 use App\Models\Group;
 use App\Models\Room;
@@ -76,11 +78,35 @@ class TenantController extends Controller
     {
         $this->authorizeTenantOwner($tenant);
 
-        $query1 = $tenant->invoices();
-        $query2 = $tenant->payments();
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
 
+        $invoiceQuery = $tenant->invoices();
+        if(request("search")) {
+            $invoiceQuery->where(
+                "invoice_number",
+                "like",
+                "%" . request("search")
+            );
+        }
+        $invoices = $invoiceQuery->orderBy($sortField, $sortDirection)->paginate(10, ['*'], 'invoice_page')->onEachSide(1);
+
+        $paymentQuery = $tenant->payments();
+        if (request("search")) {
+            $invoiceQuery->where(
+                "reference_number",
+                "like",
+                "%" . request("search")
+            );
+        }
+        $payments = $paymentQuery->orderBy($sortField, $sortDirection)->paginate(10, ['*'], 'payment_page')->onEachSide(1);
+
+        return inertia('Tenants/Show', [
+            'tenant' => new TenantResource($tenant),
+            'invoices' => InvoiceResource::collection($invoices),
+            'payments' => PaymentResource::collection($payments),
+            'queryParams' => request()->query() ?: null,
+        ]);
     }
 
     /**
