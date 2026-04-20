@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('invoice_id')
                 ->constrained('invoices')
                 ->cascadeOnDelete();
+            $table->foreignId('tenant_id')
+                ->constrained('tenants')
+                ->cascadeOnDelete();
             $table->integer('amount_paid');
             $table->timestamp('payment_date');
             $table->enum('payment_method', ['Cash', 'Gcash', 'Bank', 'Online']);

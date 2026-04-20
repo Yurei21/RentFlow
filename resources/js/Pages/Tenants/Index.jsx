@@ -241,7 +241,9 @@ export default function Index({ tenants, queryParams = null, success }) {
                                                     className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
                                                 >
                                                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                                        {tenant.tenant_name}
+                                                        <Link href={route('tenant.show', tenant.id)}>
+                                                            {tenant.tenant_name}
+                                                        </Link>
                                                     </td>
                                                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                                         {
@@ -353,7 +355,11 @@ export default function Index({ tenants, queryParams = null, success }) {
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Modal show={showDeleteModal} onClose={closeDeleteModal} maxWidth="md">
+            <Modal
+                show={showDeleteModal}
+                onClose={closeDeleteModal}
+                maxWidth="md"
+            >
                 <div className="p-6">
                     <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
                         <svg
@@ -374,7 +380,9 @@ export default function Index({ tenants, queryParams = null, success }) {
                         Delete Tenant
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-6">
-                        Are you sure you want to delete tenant "<strong>{tenantToDelete?.tenant_name}</strong>"? This action cannot be undone.
+                        Are you sure you want to delete tenant "
+                        <strong>{tenantToDelete?.tenant_name}</strong>"? This
+                        action cannot be undone.
                     </p>
                     <div className="flex gap-3">
                         <button

@@ -243,8 +243,7 @@ export default function Index({ rooms, queryParams = null, success }) {
                                                         Monthly Price
                                                     </span>
                                                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                                        PHP
-                                                        {room.monthly_price}
+                                                        PHP {room.monthly_price}
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
