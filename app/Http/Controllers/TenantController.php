@@ -17,7 +17,7 @@ class TenantController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() 
+    public function index()
     {
         $user = Auth::user();
 
@@ -30,7 +30,7 @@ class TenantController extends Controller
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
 
-        if(request("search")) {
+        if (request("search")) {
             $query->where("tenant_name", "like", "%" . request("search") . "%");
         }
 
@@ -54,7 +54,7 @@ class TenantController extends Controller
         return inertia("Tenants/Create", [
             'groups' => $groups,
             'rooms' => $rooms
-        ]); 
+        ]);
     }
 
     /**
@@ -76,13 +76,11 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        $this->authorizeTenantOwner($tenant);
-
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
 
         $invoiceQuery = $tenant->invoices();
-        if(request("search")) {
+        if (request("search")) {
             $invoiceQuery->where(
                 "invoice_number",
                 "like",
@@ -114,8 +112,6 @@ class TenantController extends Controller
      */
     public function edit(Tenant $tenant)
     {
-        $this->authorizeTenantOwner($tenant, true);
-
         $user = Auth::user();
         $availableGroups = Group::where('created_by', $user->id)->get();
         $availableRooms = Room::where('status', 'available')->get();
@@ -132,7 +128,6 @@ class TenantController extends Controller
      */
     public function update(UpdateTenantRequest $request, Tenant $tenant)
     {
-        $this->authorizeTenantOwner($tenant, true);
         $data = $request->validated();
         $data['modified_by'] = Auth::id();
 
@@ -146,40 +141,10 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
-        $this->authorizeTenantOwner($tenant, true);
-
         $name = $tenant->tenant_name;
 
         $tenant->delete();
 
         return to_route('tenant.index')->with('success', "Tenant \"$name\" was deleted");
-    }
-    private function authorizeTenantOwner(Tenant $tenant, $asOwner = false)
-    {
-        $user = Auth::user();
-
-        if (!$tenant->group_id) {
-            if ($asOwner && $tenant->created_by !== $user->id) {
-                abort(403, 'Only the owner can perform this action.');
-            }
-
-            if (!$asOwner && $tenant->created_by !== $user->id) {
-                abort(403, 'You do not have access to this solo tenant.');
-            }
-        }
-
-        if ($tenant->group_id && $tenant->group) {
-            /** @var \App\Models\Group $group */
-            $group = $tenant->group;
-            $isMember = $group->users()->where('user_id', $user->id)->exists();
-
-            if (!$isMember) {
-                abort(403, 'you are not a member of this tenant');
-            }
-
-            if ($asOwner && $group->created_by !== $user->id && $tenant->created_by !== $user->id) {
-                abort(403, 'Only the tenant creatorr can perform this action.');
-            }
-        }
     }
 }

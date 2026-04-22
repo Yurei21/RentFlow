@@ -70,8 +70,6 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
-        $this->authorizeRoomOwner($room);
-
         $query = $room->tenants();
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
@@ -98,8 +96,6 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        $this->authorizeRoomOwner($room, true);
-
         $user = Auth::user();
         $availableGroups = Group::where('created_by', $user->id)->get();
 
@@ -114,8 +110,6 @@ class RoomController extends Controller
      */
     public function update(UpdateRoomRequest $request, Room $room)
     {
-        $this->authorizeRoomOwner($room, true);
-
         $data = $request->validated();
         $data['modified_by'] = Auth::id();
 
@@ -129,41 +123,9 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        $this->authorizeRoomOwner($room, true);
-
         $name = $room->room_name;
 
         $room->delete();
         return to_route('room.index')->with('success', "Room \"$name\" was deleted");
-    }
-
-    /**
-     * For Authorization
-     */
-    private function authorizeRoomOwner(Room $room, $asOwner = false)
-    {
-        $user = Auth::user();
-
-        if (!$room->group_id) {
-            if ($asOwner && $room->created_by !== $user->id) {
-                abort(403, 'Only the owner can perform this action.');
-            }
-
-            if (!$asOwner && $room->created_by !== $user->id) {
-                abort(403, 'You do not have access to this solo room.');
-            }
-        }
-
-        if ($room->group_id) {
-            $isMember = $room->group->users()->where('user_id', $user->id)->exists();
-
-            if (!$isMember) {
-                abort(403, 'you are not a member of this room');
-            }
-
-            if ($asOwner && $room->group->created_by !== $user->id && $room->created_by !== $user->id) {
-                abort(403, 'Only the room creatorr can perform this action.');
-            }
-        }
     }
 }
