@@ -7,18 +7,21 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router, useForm } from "@inertiajs/react";
 import Select from "react-select";
 
-export default function Create({ groups, tenant }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+export default function Edit({ groups, tenant, rooms }) {
+    const { data, setData, put, processing, errors, reset } = useForm({
         tenant_id: tenant.tenant_id || "",
+        room_id: tenant.room.id || "",
         tenant_name: tenant.tenant_name || "",
         is_active: tenant.is_active || false,
         group_id: tenant.group_id || "",
     });
 
+    console.log(tenant);
+
     const onSubmit = (e) => {
         e.preventDefault();
 
-        post(route("tenant.update"));
+        put(route("tenant.update", tenant.id));
     };
 
     const groupOptions = groups.map((groups) => ({
@@ -399,8 +402,8 @@ export default function Create({ groups, tenant }) {
                                     className="px-6"
                                 >
                                     {processing
-                                        ? "Creating..."
-                                        : "Create Tenant"}
+                                        ? "Updating..."
+                                        : "Update Tenant"}
                                 </PrimaryButton>
                                 <Link href={route("room.index")}>
                                     <SecondaryButton type="button">

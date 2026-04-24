@@ -14,17 +14,7 @@ class TenantPolicy
      */
     public function viewAny(User $user): bool
     {
-        $solo = Tenant::where('created_by', $user->id)
-            ->whereNull('group_id')
-            ->exists();
-
-        if ($solo) {
-            return true;
-        }
-
-        $hasGroupMembership = GroupMembers::where('user_id', $user->id)->exists();
-
-        return $hasGroupMembership;
+        return true;
     }
 
     /**

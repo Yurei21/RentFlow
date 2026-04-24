@@ -238,18 +238,27 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
-                {/* ── Mobile menu ──────────────────────────────────────────── */}
+                {/* ── Mobile Sidebar Backdrop ───────────────────────────────── */}
+                {showingNavigationDropdown && (
+                    <div
+                        onClick={() => setShowingNavigationDropdown(false)}
+                        className="md:hidden fixed inset-0 top-16 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
+                    />
+                )}
+
+                {/* ── Mobile Sidebar Menu ──────────────────────────────────── */}
                 <div
                     className={[
-                        "md:hidden border-t border-primary-100 dark:border-surface-700 bg-white/95 dark:bg-surface-800/95 backdrop-blur-md",
-                        "overflow-hidden transition-all duration-300 ease-in-out",
+                        "md:hidden fixed top-16 right-0 h-[calc(100vh-64px)] w-72 z-40",
+                        "bg-white dark:bg-surface-800 border-l border-primary-100 dark:border-surface-700",
+                        "overflow-y-auto transition-transform duration-300 ease-in-out",
                         showingNavigationDropdown
-                            ? "max-h-[600px] opacity-100"
-                            : "max-h-0 opacity-0",
+                            ? "translate-x-0"
+                            : "translate-x-full",
                     ].join(" ")}
                 >
                     {/* Mobile user card */}
-                    <div className="flex items-center gap-3 px-4 py-4 border-b border-primary-100 dark:border-surface-700">
+                    <div className="flex items-center gap-3 px-4 py-4 border-b border-primary-100 dark:border-surface-700 sticky top-0 bg-white dark:bg-surface-800">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary-600 to-primary-700 text-white text-sm font-bold shadow-md shadow-primary-500/30">
                             {initials}
                         </span>
@@ -270,6 +279,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 key={r}
                                 href={route(r)}
                                 active={route().current(r)}
+                                onClick={() =>
+                                    setShowingNavigationDropdown(false)
+                                }
                                 style={{
                                     transitionDelay: showingNavigationDropdown
                                         ? `${i * 35}ms`
@@ -293,6 +305,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     <div className="px-3 pb-4 pt-1 border-t border-primary-100 dark:border-surface-700 mt-1 space-y-0.5">
                         <ResponsiveNavLink
                             href={route("profile.edit")}
+                            onClick={() => setShowingNavigationDropdown(false)}
                             className="block px-3 py-2.5 rounded-lg text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-primary-50/70 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400 transition-all duration-200 hover:translate-x-1"
                         >
                             Profile
@@ -301,6 +314,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             method="post"
                             href={route("logout")}
                             as="button"
+                            onClick={() => setShowingNavigationDropdown(false)}
                             className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-200 hover:translate-x-1"
                         >
                             Log Out

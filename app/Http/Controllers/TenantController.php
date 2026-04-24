@@ -21,6 +21,7 @@ class TenantController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $this->authorize('viewAny', Tenant::class);
 
         $query = Tenant::query()->with(['group.users', 'createdBy', 'updatedBy'])->where(function ($q) use ($user) {
             $q->where('created_by', $user->id)->orWhereHas('group.users', function ($q2) use ($user) {
@@ -49,6 +50,7 @@ class TenantController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Tenant::class);
         $user = Auth::user();
         $groups = Group::where('created_by', $user->id)->get();
         $rooms = Room::where('created_by', $user->id)->get();
@@ -88,6 +90,7 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
+        $this->authorize('view', $tenant);
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
 
@@ -124,6 +127,7 @@ class TenantController extends Controller
      */
     public function edit(Tenant $tenant)
     {
+        $this->authorize('update', $tenant);
         $user = Auth::user();
         $availableGroups = Group::where('created_by', $user->id)->get();
         $availableRooms = Room::where('status', 'available')->get();
@@ -140,6 +144,7 @@ class TenantController extends Controller
      */
     public function update(UpdateTenantRequest $request, Tenant $tenant)
     {
+        $this->authorize('update', $tenant);
         $data = $request->validated();
         $data['modified_by'] = Auth::id();
 
@@ -153,6 +158,7 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
+        $this->authorize('delete', $tenant);
         $name = $tenant->tenant_name;
 
         $tenant->delete();

@@ -112,30 +112,24 @@ export default function Show({
                                 </div>
                                 <div>
                                     <p className="text-blue-100 text-sm font-medium mb-2 opacity-90">
+                                        Room
+                                    </p>
+                                    <p className="text-2xl font-bold">
+                                        {tenant.room?.room_name || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-blue-100 text-sm font-medium mb-2 opacity-90">
                                         Created By
                                     </p>
                                     <p className="text-lg font-semibold">
                                         {tenant.created_by.name}
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-blue-100 text-sm font-medium mb-2 opacity-90">
-                                        Created Date
-                                    </p>
-                                    <p className="text-lg font-semibold">
-                                        {new Date(
-                                            tenant.created_at,
-                                        ).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                        })}
-                                    </p>
-                                </div>
                             </div>
                         </div>
                         <div className="p-8 text-gray-900 dark:text-gray-100">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
                                 <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                                         Tenant ID
@@ -168,6 +162,20 @@ export default function Show({
                                         {tenant.group
                                             ? tenant.group.group_name
                                             : "No Group"}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                        Created at
+                                    </span>
+                                    <span className="font-semibold">
+                                        {new Date(
+                                            tenant.created_at,
+                                        ).toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        })}
                                     </span>
                                 </div>
                                 <div className="flex flex-col p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">

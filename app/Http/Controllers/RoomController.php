@@ -20,6 +20,8 @@ class RoomController extends Controller
     {
         $user = Auth::user();
 
+        $this->authorize('viewAny', Room::class);
+
         $query = Room::query()->with(['group.users', 'createdBy', 'updatedBy'])->where(function ($q) use ($user) {
             $q->where('created_by', $user->id)->orWhereHas('group.users', function ($q2) use ($user) {
                 $q2->where('user_id', $user->id);
@@ -47,6 +49,7 @@ class RoomController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Room::class);
         $user = Auth::user();
         $groups = Group::where('created_by', $user->id)->get();
         return inertia("Rooms/Create", ['groups' => $groups]);
@@ -57,6 +60,7 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
+        $this->authorize('create', Room::class);
         $data = $request->validated();
         if ($data['group_id']) {
             $role = GroupMembers::getUserRole(Auth::id(), $data['group_id']);
@@ -82,6 +86,7 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
+        $this->authorize('view', $room);
         $query = $room->tenants();
         $sortField = request("sort_field", "created_at");
         $sortDirection = request("sort_direction", "desc");
@@ -108,6 +113,7 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
+        $this->authorize('update', $room);
         $user = Auth::user();
         $availableGroups = Group::where('created_by', $user->id)->get();
 
@@ -122,6 +128,7 @@ class RoomController extends Controller
      */
     public function update(UpdateRoomRequest $request, Room $room)
     {
+        $this->authorize('update', $room);
         $data = $request->validated();
         $data['modified_by'] = Auth::id();
 
@@ -135,6 +142,7 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
+        $this->authorize('delete', $room);
         $name = $room->room_name;
 
         $room->delete();
