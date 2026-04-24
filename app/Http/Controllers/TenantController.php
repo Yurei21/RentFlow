@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateTenantRequest;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\TenantResource;
 use App\Models\Group;
+use App\Models\GroupMembers;
 use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 
@@ -63,6 +64,17 @@ class TenantController extends Controller
     public function store(StoreTenantRequest $request)
     {
         $data = $request->validated();
+        if ($data['group_id']) {
+            $role = GroupMembers::getUserRole(Auth::id(), $data['group_id']);
+            $canStore = in_array($role, [
+                GroupMembers::ROLE_ADMIN,
+                GroupMembers::ROLE_MODERATOR
+            ]);
+
+            if (!$canStore) {
+                abort(403, 'Only admins and moderators of the group can create rooms.');
+            }
+        }
         $data['created_by'] = Auth::id();
         $data['modified_by'] = Auth::id();
 

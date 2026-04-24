@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateRoomRequest;
 use App\Http\Resources\RoomResource;
 use App\Http\Resources\TenantResource;
 use App\Models\Group;
+use App\Models\GroupMembers;
 use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
@@ -57,6 +58,17 @@ class RoomController extends Controller
     public function store(StoreRoomRequest $request)
     {
         $data = $request->validated();
+        if ($data['group_id']) {
+            $role = GroupMembers::getUserRole(Auth::id(), $data['group_id']);
+            $canStore = in_array($role, [
+                GroupMembers::ROLE_ADMIN,
+                GroupMembers::ROLE_MODERATOR
+            ]);
+
+            if (!$canStore) {
+                abort(403, 'Only admins and moderators of the group can create rooms.');
+            }
+        }
         $data['created_by'] = Auth::id();
         $data['modified_by'] = Auth::id();
 

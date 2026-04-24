@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('capacity')->default(1);
             $table->text('description')->nullable();
             $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available');
-            $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();;
+            $table->foreignId('group_id')->nullable()->constrained('groups')->nullOnDelete();;
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('modified_by')->constrained('users');
             $table->timestamps();

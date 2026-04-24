@@ -19,6 +19,10 @@ return new class extends Migration
             $table->foreignId('tenant_id')
                 ->constrained('tenants')
                 ->cascadeOnDelete();
+            $table->foreignId('group_id')
+                ->nullable()
+                ->constrained('groups')
+                ->nullOnDelete();
             $table->integer('amount_paid');
             $table->timestamp('payment_date');
             $table->enum('payment_method', ['Cash', 'Gcash', 'Bank', 'Online']);

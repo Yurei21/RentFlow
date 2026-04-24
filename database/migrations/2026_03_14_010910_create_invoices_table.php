@@ -17,6 +17,10 @@ return new class extends Migration
             $table->foreignId('tenant_id')
                   ->constrained('tenants')
                   ->cascadeOnDelete();
+            $table->foreignId('group_id')
+                ->nullable()
+                ->constrained('groups')
+                ->nullOnDelete();
             $table->decimal('amount', 10, 2);
             $table->date('billing_date');
             $table->date('due_date');

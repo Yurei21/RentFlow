@@ -15,6 +15,7 @@ class Invoice extends Model
     protected $fillable = [
         'receipt_number',
         'tenant_id',
+        'group_id',
         'amount',
         'billing_date',
         'due_date',
@@ -24,16 +25,24 @@ class Invoice extends Model
         'modified_by'
     ];
 
-    public function payments(): HasMany {
+    public function payments(): HasMany
+    {
         return $this->hasMany(Payment::class);
     }
-    public function tenant(): BelongsTo {
+    public function tenant(): BelongsTo
+    {
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
-    public function createdBy(): BelongsTo {
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+    public function createdBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
-    public function updatedBy(): BelongsTo {
+    public function updatedBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'modified_by');
     }
 }

@@ -14,6 +14,7 @@ class Payment extends Model
     protected $fillable = [
         'invoice_id',
         'amount_paid',
+        'group_id',
         'payment_date',
         'payment_method',
         'reference_number',
@@ -21,15 +22,23 @@ class Payment extends Model
         'modified_by'
     ];
 
-    public function invoice(): BelongsTo {
+    public function invoice(): BelongsTo
+    {
         return $this->belongsTo(Invoice::class, 'invoice_id');
     }
 
-    public function createdBy(): BelongsTo {
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy(): BelongsTo {
+    public function updatedBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'modified_by');
     }
 }
