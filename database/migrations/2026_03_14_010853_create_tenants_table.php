@@ -18,6 +18,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('tenant_name');
             $table->boolean('is_active')->default(true);
+            $table->timestamp('billing_date')->useCurrent();
             $table->foreignId('group_id')
                 ->nullable()
                 ->constrained('groups')

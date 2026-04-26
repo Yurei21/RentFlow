@@ -165,7 +165,7 @@ export default function Login({ status, canResetPassword }) {
 
                 {/* Google SSO — mirrors login exactly */}
                 <a
-                    href="/auth/google"
+                    href={`/auth/google?remember=${data.remember ? "1" : "0"}`}
                     className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                 >
                     <svg
