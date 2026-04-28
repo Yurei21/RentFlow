@@ -46,10 +46,6 @@ RUN composer install \
 # Copy frontend build into Laravel public folder
 COPY --from=frontend-builder /app/public/build ./public/build
 
-# IMPORTANT: DO NOT run artisan cache here (causes build failures)
-# config cache should be done at runtime
-
-
 # ---------- Stage 3: Runtime ----------
 FROM php:8.4-cli AS runner
 WORKDIR /var/www/html
