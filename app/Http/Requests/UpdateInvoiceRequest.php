@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateInvoiceRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateInvoiceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,13 @@ class UpdateInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'tenant_id' => ['required', 'exists:tenant,id'],
+            'group_id' => ['nullable', 'exists:group,id'],
+            'amount' => ['required', 'numeric'],
+            'billing_date' => ['required|date|after_or_equal::today'],
+            'due_date' => ['required|date|after_or_equal::today'],
+            'status' => ['required', Rule::in(['Pending', 'Paid', 'Overdue'])],
+            'description' => ['required', 'string|min:5|max:150'],
         ];
     }
 }

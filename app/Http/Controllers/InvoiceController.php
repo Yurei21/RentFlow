@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
+use App\Http\Resources\GroupResource;
+use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\TenantResource;
+use App\Models\Group;
+use App\Models\GroupMembers;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
@@ -13,7 +19,29 @@ class InvoiceController extends Controller
      * Display a listing of the resource.
      */
     public function index() {
-        
+        $user = Auth::user();
+        $this->authorize('viewAny', Invoice::class);
+
+        $query = Invoice::query()->with(['group.users', 'createdBy', 'updatedBy'])->where(function ($q) use ($user) {
+            $q->where('created_by', $user->id)->orWhereHas('group.users', function ($q2) use ($user) {
+                $q2->where('user_id', $user->id);
+            });
+        });
+
+        $sortDirection = request('sort_direction', 'desc');
+        $sortField = request('sort_field', 'created_at');
+
+        if(request('search')) {
+            $query->where("description", "like", "%" . request("search") . "%");
+        }
+
+        $invoices = $query->orderBy($sortField, $sortDirection)->paginate(20)->onEachSide(1);
+
+        return inertia('Invoices/Index', [
+            'invoices' => InvoiceResource::collection($invoices),
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success')
+        ]);
     }
 
     /**
@@ -21,7 +49,14 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Invoice::class);
+        $user = Auth::user();
+        $groups = Group::where('created_by', $user->id);
+        $tenants = Tenant::where('created_by', $user->id);
+        return inertia('Invoices/Create', [
+            'groups' => $groups->map(fn($group) => new GroupResource($group)),
+            'tenants' => $tenants->map(fn($tenant) => new TenantResource($tenant))
+        ]);
     }
 
     /**
@@ -29,7 +64,26 @@ class InvoiceController extends Controller
      */
     public function store(StoreInvoiceRequest $request)
     {
-        //
+        $data = $request->validated();
+        $data['receipt_number'] = random_int(5, 10);
+        if($data['group_id']) {
+            $role = GroupMembers::getUserRole(Auth::id(), $data['group_id']);
+            $canStore = in_array($role, [
+                GroupMembers::ROLE_ADMIN,
+                GroupMembers::ROLE_MODERATOR
+            ]);
+
+            if(!$canStore){
+                abort(403, 'Only admins and moderators can add an invoice');
+            }
+        }
+
+        $data['created_by'] = Auth::id();
+        $data['modified_by'] = Auth::id();
+
+        Invoice::create($data);
+
+        return to_route('invoice.index')->with('success', 'Invoices was created');
     }
 
     /**
@@ -37,7 +91,11 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-        //
+        $this->authorize('view', $invoice);
+
+        return inertia('Invoices/Show', [
+            'invoice' => new InvoiceResource($invoice)
+        ]);
     }
 
     /**
@@ -45,7 +103,11 @@ class InvoiceController extends Controller
      */
     public function edit(Invoice $invoice)
     {
-        //
+        $this->authorize('update', $invoice);
+
+        return inertia('Invoices/Edit', [
+            'invoice' => new InvoiceResource($invoice)
+        ]);
     }
 
     /**
@@ -53,7 +115,13 @@ class InvoiceController extends Controller
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
-        //
+        $this->authorize('update', $invoice);
+        $data = $request->validated();
+        $data['modified_by'] = Auth::id();
+
+        $invoice->update($data);
+
+        return to_route('invoice.index')->with('success', "Invoice {$data->receipt_number} has been updated");
     }
 
     /**
@@ -61,6 +129,10 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
-        //
+        $this->authorize('delete', $invoice);
+        $ref = $invoice->receipt_number;
+
+        $invoice->delete();
+        return to_route('invoice.index')->with('success', "Invoice Receipt Number: \"$ref\" was deleted");
     }
 }

@@ -1,5 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 
 export default function Index({invoices, queryParams = null, success}) {
     queryParams = queryParams || {};
@@ -13,7 +14,64 @@ export default function Index({invoices, queryParams = null, success}) {
     );
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [tenantToDelete, setTenantToDelete] = useState(null);
+    const [invoiceToDelete, setInvoiceToDelete] = useState(null);
+    useEffect(() => {
+        if (showSuccess) {
+            const timer = setTimeout(() => {
+                setShowSuccess(false);
+            }, 3000)
+        }
+    }, [showSuccess]);
+
+    const searchFieldChange = (description, value) => {
+        if (value) {
+            queryParams[description] = value;
+        } else {
+            delete queryParams[description];
+        }
+
+        router.get(route("invoice.index"), queryParams);
+    };
+
+    const handleSortChange = (field, direction = null) => {
+        const newDirection = direction !== null ? direction : sortDirection;
+        setSortField(field);
+        setSortDirection(newDirection);
+
+        const newParams = {
+            ...queryParams,
+            sort_field: field,
+            sort_direction: newDirection,
+        };
+
+        router.get(route("invoice.index"), newParams);
+    };
+
+    const onKeyPress = (description, e) => {
+        if (e.key !== "enter") return;
+
+        searchFieldChange(description, e.target.value);
+    };
+
+    const openDeleteModal = (invoice) => {
+        setInvoiceToDelete(invoice);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = () => {
+        if (!invoiceToDelete) return;
+        router.visit(route("invoice.destroy", invoiceToDelete.id), {
+            method: "delete",
+            preserveScroll: true,
+            preserveState: false,
+        }); 
+    };
+
+    const closeDeleteModal = () => {
+        setInvoiceToDelete(null);
+        setShowDeleteModal(false);
+    };
+    
     return (
         <AuthenticatedLayout
             header={
@@ -23,8 +81,21 @@ export default function Index({invoices, queryParams = null, success}) {
                     </h2>
                     <Link
                         href={route("invoice.create")}
-                        className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+                        className="inline-flex items-center bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
                     >
+                        <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 dv16m8-8H4"
+                            />
+                        </svg>
                         Add New
                     </Link>
                 </div>

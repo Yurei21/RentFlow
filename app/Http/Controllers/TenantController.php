@@ -6,7 +6,9 @@ use App\Http\Resources\InvoiceResource;
 use App\Models\Tenant;
 use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
+use App\Http\Resources\GroupResource;
 use App\Http\Resources\PaymentResource;
+use App\Http\Resources\RoomResource;
 use App\Http\Resources\TenantResource;
 use App\Models\Group;
 use App\Models\GroupMembers;
@@ -55,8 +57,8 @@ class TenantController extends Controller
         $groups = Group::where('created_by', $user->id)->get();
         $rooms = Room::where('created_by', $user->id)->get();
         return inertia("Tenants/Create", [
-            'groups' => $groups,
-            'rooms' => $rooms
+            'groups' => $groups->map(fn($group) => new GroupResource($group)),
+            'rooms' => $rooms->map(fn($room) => new RoomResource($room))
         ]);
     }
 
@@ -134,8 +136,8 @@ class TenantController extends Controller
 
         return inertia('Tenants/Edit', [
             'tenant' => new TenantResource($tenant),
-            'groups' => $availableGroups,
-            'rooms' => $availableRooms
+            'groups' => $availableGroups->map(fn($availableGroup) => new GroupResource($availableGroup)),
+            'rooms' => $availableRooms->map(fn($availableRoom) => new RoomResource($availableRoom))
         ]);
     }
 
