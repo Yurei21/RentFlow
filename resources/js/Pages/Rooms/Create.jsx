@@ -5,7 +5,6 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router, useForm } from "@inertiajs/react";
-import Select from "react-select";
 
 export default function Create({ groups }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -182,63 +181,31 @@ export default function Create({ groups }) {
                                             htmlFor="status"
                                             value="Status"
                                         />
-                                        <Select
+                                        <select
+                                            id="status"
                                             name="status"
-                                            options={[
-                                                {
-                                                    value: "available",
-                                                    label: "Available",
-                                                },
-                                                {
-                                                    value: "occupied",
-                                                    label: "Occupied",
-                                                },
-                                                {
-                                                    value: "maintenance",
-                                                    label: "Maintenance",
-                                                },
-                                            ]}
-                                            className="basic-select"
-                                            classNamePrefix="select"
-                                            placeholder="Choose a status..."
-                                            value={
-                                                [
-                                                    {
-                                                        value: "available",
-                                                        label: "Available",
-                                                    },
-                                                    {
-                                                        value: "occupied",
-                                                        label: "Occupied",
-                                                    },
-                                                    {
-                                                        value: "maintenance",
-                                                        label: "Maintenance",
-                                                    },
-                                                ].find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.status,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
+                                            value={data.status}
+                                            onChange={(e) =>
                                                 setData(
                                                     "status",
-                                                    selected?.value || "",
+                                                    e.target.value,
                                                 )
                                             }
-                                            styles={{
-                                                control: (base) => ({
-                                                    ...base,
-                                                    borderColor: "#e5e7eb",
-                                                    backgroundColor: "#ffffff",
-                                                    marginTop: "0.5rem",
-                                                    "&:hover": {
-                                                        borderColor: "#d1d5db",
-                                                    },
-                                                }),
-                                            }}
-                                        />
+                                            className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                        >
+                                            <option value="">
+                                                Choose a status...
+                                            </option>
+                                            <option value="available">
+                                                Available
+                                            </option>
+                                            <option value="occupied">
+                                                Occupied
+                                            </option>
+                                            <option value="maintenance">
+                                                Maintenance
+                                            </option>
+                                        </select>
                                         <InputError
                                             message={errors.status}
                                             className="mt-2"
@@ -251,43 +218,35 @@ export default function Create({ groups }) {
                                             htmlFor="group_id"
                                             value="Assign to Group (Optional)"
                                         />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
                                             Assign this room to a group property
                                         </p>
-                                        <Select
+                                        <select
+                                            id="group_id"
                                             name="group_id"
-                                            options={groupOptions}
-                                            isClearable
-                                            className="basic-select"
-                                            classNamePrefix="select"
-                                            placeholder="Choose a group..."
-                                            value={
-                                                groupOptions.find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.group_id,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
+                                            value={data.group_id}
+                                            onChange={(e) =>
                                                 setData(
                                                     "group_id",
-                                                    selected?.value || "",
+                                                    e.target.value,
                                                 )
                                             }
-                                            styles={{
-                                                control: (base) => ({
-                                                    ...base,
-                                                    borderColor: "#e5e7eb",
-                                                    backgroundColor: "#ffffff",
-                                                    marginTop: "0.5rem",
-                                                    "&:hover": {
-                                                        borderColor: "#d1d5db",
-                                                    },
-                                                }),
-                                            }}
-                                        />
+                                            className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                        >
+                                            <option value="">
+                                                Choose a group...
+                                            </option>
+                                            {groupOptions.map((group) => (
+                                                <option
+                                                    key={group.value}
+                                                    value={group.value}
+                                                >
+                                                    {group.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                         <InputError
-                                            message={errors.groups}
+                                            message={errors.group_id}
                                             className="mt-2"
                                         />
                                     </div>

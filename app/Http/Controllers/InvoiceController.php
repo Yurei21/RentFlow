@@ -51,8 +51,8 @@ class InvoiceController extends Controller
     {
         $this->authorize('create', Invoice::class);
         $user = Auth::user();
-        $groups = Group::where('created_by', $user->id);
-        $tenants = Tenant::where('created_by', $user->id);
+        $groups = Group::where('created_by', $user->id)->get();
+        $tenants = Tenant::where('created_by', $user->id)->get();
         return inertia('Invoices/Create', [
             'groups' => $groups->map(fn($group) => new GroupResource($group)),
             'tenants' => $tenants->map(fn($tenant) => new TenantResource($tenant))
@@ -104,9 +104,13 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice)
     {
         $this->authorize('update', $invoice);
-
+        $user = Auth::user();
+        $groups = Group::where('created_by', $user->id)->get();
+        $tenants = Tenant::where('created_by', $user->id)->get();
         return inertia('Invoices/Edit', [
-            'invoice' => new InvoiceResource($invoice)
+            'invoice' => new InvoiceResource($invoice),
+            'groups' => $groups->map(fn($group) => new GroupResource($group)),
+            'tenants' => $tenants->map(fn($tenant) => new TenantResource($tenant))
         ]);
     }
 

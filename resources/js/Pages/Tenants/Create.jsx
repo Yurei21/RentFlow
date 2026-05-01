@@ -5,7 +5,6 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router, useForm } from "@inertiajs/react";
-import Select from "react-select";
 
 export default function Create({ groups, rooms }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -84,96 +83,35 @@ export default function Create({ groups, rooms }) {
                                             htmlFor="room_id"
                                             value="Assign to a room"
                                         />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
                                             Assign this tenant to a room
                                         </p>
-                                        <Select
+                                        <select
+                                            id="room_id"
                                             name="room_id"
-                                            options={roomOptions}
-                                            isClearable
-                                            placeholder="Choose a room..."
-                                            value={
-                                                roomOptions.find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.room_id,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
+                                            value={data.room_id}
+                                            onChange={(e) =>
                                                 setData(
                                                     "room_id",
-                                                    selected?.value || "",
+                                                    e.target.value,
                                                 )
                                             }
-                                            styles={{
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    borderColor: state.isFocused
-                                                        ? "#2563eb"
-                                                        : "#d1d5db",
-                                                    backgroundColor: "#ffffff",
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    minHeight: "42px",
-                                                    boxShadow: state.isFocused
-                                                        ? "0 0 0 3px rgb(37 99 235 / 0.1)"
-                                                        : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-                                                    transition: "all 0.2s",
-                                                    color: "#111827",
-                                                    "&:hover": {
-                                                        borderColor:
-                                                            state.isFocused
-                                                                ? "#2563eb"
-                                                                : "#9ca3af",
-                                                    },
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor:
-                                                        state.isSelected
-                                                            ? "#2563eb"
-                                                            : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "#ffffff",
-                                                    color: state.isSelected
-                                                        ? "#ffffff"
-                                                        : "#111827",
-                                                    padding: "0.625rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    cursor: "pointer",
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                input: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    boxShadow:
-                                                        "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                                                    border: "1px solid #e5e7eb",
-                                                }),
-                                                menuList: (base) => ({
-                                                    ...base,
-                                                    padding: "0.5rem 0",
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    color: "#9ca3af",
-                                                    "&:hover": {
-                                                        color: "#6b7280",
-                                                    },
-                                                }),
-                                            }}
-                                            className="mt-2"
-                                        />
+                                            className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                        >
+                                            <option value="">
+                                                Choose a room...
+                                            </option>
+                                            {roomOptions.map((room) => (
+                                                <option
+                                                    key={room.value}
+                                                    value={room.value}
+                                                >
+                                                    {room.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                         <InputError
-                                            message={errors.rooms}
+                                            message={errors.room_id}
                                             className="mt-2"
                                         />
                                     </div>
@@ -182,96 +120,36 @@ export default function Create({ groups, rooms }) {
                                             htmlFor="group_id"
                                             value="Assign to Group (Optional)"
                                         />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
-                                            Assign this room to a group property
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                            Assign this tenant to a group
+                                            property
                                         </p>
-                                        <Select
+                                        <select
+                                            id="group_id"
                                             name="group_id"
-                                            options={groupOptions}
-                                            isClearable
-                                            placeholder="Choose a group..."
-                                            value={
-                                                groupOptions.find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.group_id,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
+                                            value={data.group_id}
+                                            onChange={(e) =>
                                                 setData(
                                                     "group_id",
-                                                    selected?.value || "",
+                                                    e.target.value,
                                                 )
                                             }
-                                            styles={{
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    borderColor: state.isFocused
-                                                        ? "#2563eb"
-                                                        : "#d1d5db",
-                                                    backgroundColor: "#ffffff",
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    minHeight: "42px",
-                                                    boxShadow: state.isFocused
-                                                        ? "0 0 0 3px rgb(37 99 235 / 0.1)"
-                                                        : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-                                                    transition: "all 0.2s",
-                                                    color: "#111827",
-                                                    "&:hover": {
-                                                        borderColor:
-                                                            state.isFocused
-                                                                ? "#2563eb"
-                                                                : "#9ca3af",
-                                                    },
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor:
-                                                        state.isSelected
-                                                            ? "#2563eb"
-                                                            : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "#ffffff",
-                                                    color: state.isSelected
-                                                        ? "#ffffff"
-                                                        : "#111827",
-                                                    padding: "0.625rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    cursor: "pointer",
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                input: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    boxShadow:
-                                                        "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                                                    border: "1px solid #e5e7eb",
-                                                }),
-                                                menuList: (base) => ({
-                                                    ...base,
-                                                    padding: "0.5rem 0",
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    color: "#9ca3af",
-                                                    "&:hover": {
-                                                        color: "#6b7280",
-                                                    },
-                                                }),
-                                            }}
-                                            className="mt-2"
-                                        />
+                                            className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                        >
+                                            <option value="">
+                                                Choose a group...
+                                            </option>
+                                            {groupOptions.map((group) => (
+                                                <option
+                                                    key={group.value}
+                                                    value={group.value}
+                                                >
+                                                    {group.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                         <InputError
-                                            message={errors.groups}
+                                            message={errors.group_id}
                                             className="mt-2"
                                         />
                                     </div>
@@ -280,111 +158,29 @@ export default function Create({ groups, rooms }) {
                                             htmlFor="is_active"
                                             value="Is it Active?"
                                         />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
                                             Is the user active?
                                         </p>
-                                        <Select
-                                            name="status"
-                                            options={[
-                                                {
-                                                    value: true,
-                                                    label: "True",
-                                                },
-                                                {
-                                                    value: false,
-                                                    label: "False",
-                                                },
-                                            ]}
-                                            placeholder="Choose a status..."
-                                            value={
-                                                [
-                                                    {
-                                                        value: true,
-                                                        label: "True",
-                                                    },
-                                                    {
-                                                        value: false,
-                                                        label: "False",
-                                                    },
-                                                ].find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.is_active,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
+                                        <select
+                                            id="is_active"
+                                            name="is_active"
+                                            value={data.is_active}
+                                            onChange={(e) =>
                                                 setData(
                                                     "is_active",
-                                                    selected?.value ?? false,
+                                                    e.target.value === "true",
                                                 )
                                             }
-                                            styles={{
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    borderColor: state.isFocused
-                                                        ? "#2563eb"
-                                                        : "#d1d5db",
-                                                    backgroundColor: "#ffffff",
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    minHeight: "42px",
-                                                    boxShadow: state.isFocused
-                                                        ? "0 0 0 3px rgb(37 99 235 / 0.1)"
-                                                        : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-                                                    transition: "all 0.2s",
-                                                    color: "#111827",
-                                                    "&:hover": {
-                                                        borderColor:
-                                                            state.isFocused
-                                                                ? "#2563eb"
-                                                                : "#9ca3af",
-                                                    },
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor:
-                                                        state.isSelected
-                                                            ? "#2563eb"
-                                                            : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "#ffffff",
-                                                    color: state.isSelected
-                                                        ? "#ffffff"
-                                                        : "#111827",
-                                                    padding: "0.625rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    cursor: "pointer",
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                input: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    boxShadow:
-                                                        "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                                                    border: "1px solid #e5e7eb",
-                                                }),
-                                                menuList: (base) => ({
-                                                    ...base,
-                                                    padding: "0.5rem 0",
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    color: "#9ca3af",
-                                                    "&:hover": {
-                                                        color: "#6b7280",
-                                                    },
-                                                }),
-                                            }}
-                                            className="mt-2"
-                                        />
+                                            className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                        >
+                                            <option value="">
+                                                Choose status...
+                                            </option>
+                                            <option value="true">Active</option>
+                                            <option value="false">
+                                                Inactive
+                                            </option>
+                                        </select>
                                         <InputError
                                             message={errors.is_active}
                                             className="mt-2"

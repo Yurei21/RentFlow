@@ -5,7 +5,6 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router, useForm } from "@inertiajs/react";
-import Select from "react-select";
 
 export default function Create({ groups, tenants }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -31,7 +30,7 @@ export default function Create({ groups, tenants }) {
 
     const tenantOptions = tenants.map((tenant) => ({
         value: tenant.id,
-        label: tenant.room_name,
+        label: tenant.tenant_name,
     }));
 
     return (
@@ -52,378 +51,218 @@ export default function Create({ groups, tenants }) {
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                         <form onSubmit={onSubmit} className="p-6 sm:p-8">
-                            <div className="flex flex-row gap-8">
-                                <div className="flex-1">
-                                    <div>
-                                        <InputLabel
-                                            htmlFor="amount"
-                                            value="Amount"
-                                        />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
-                                            Assign a bill to a tenant.
-                                        </p>
-                                        <TextInput
-                                            id="amount"
-                                            type="number"
-                                            name="amount"
-                                            value={data.amount}
-                                            className="mt-2 block w-full"
-                                            placeholder="₱3000"
-                                            isFocused={true}
-                                            onChange={(e) => {
-                                                setData(
-                                                    "amount",
-                                                    e.target.value,
-                                                );
-                                            }}
-                                        />
-                                        <InputError
-                                            message={errors.amount}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div>
-                                        <InputLabel
-                                            htmlFor="billing_date"
-                                            value="Billing Date"
-                                        />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
-                                            Assign a billing date for this invoice.
-                                        </p>
-                                        <TextInput
-                                            id="billing_date"
-                                            type="date"
-                                            name="billing_date"
-                                            value={data.billing_date}
-                                            className="mt-2 block w-full"
-                                            placeholder="₱3000"
-                                            isFocused={true}
-                                            onChange={(e) => {
-                                                setData(
-                                                    "amount",
-                                                    e.target.value,
-                                                );
-                                            }}
-                                        />
-                                        <InputError
-                                            message={errors.amount}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="mt-6">
-                                        <InputLabel
-                                            htmlFor="tenant_id"
-                                            value="Tenant"
-                                        />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
-                                            Assign this billing invoice to a
-                                            tenant
-                                        </p>
-                                        <Select
-                                            name="tenant_id"
-                                            options={tenantOptions}
-                                            isClearable
-                                            placeholder="Choose a tenant..."
-                                            value={
-                                                tenantOptions.find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.tenant_id,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
-                                                setData(
-                                                    "tenant_id",
-                                                    selected?.value || "",
-                                                )
-                                            }
-                                            styles={{
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    borderColor: state.isFocused
-                                                        ? "#2563eb"
-                                                        : "#d1d5db",
-                                                    backgroundColor: "#ffffff",
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    minHeight: "42px",
-                                                    boxShadow: state.isFocused
-                                                        ? "0 0 0 3px rgb(37 99 235 / 0.1)"
-                                                        : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-                                                    transition: "all 0.2s",
-                                                    color: "#111827",
-                                                    "&:hover": {
-                                                        borderColor:
-                                                            state.isFocused
-                                                                ? "#2563eb"
-                                                                : "#9ca3af",
-                                                    },
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor:
-                                                        state.isSelected
-                                                            ? "#2563eb"
-                                                            : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "#ffffff",
-                                                    color: state.isSelected
-                                                        ? "#ffffff"
-                                                        : "#111827",
-                                                    padding: "0.625rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    cursor: "pointer",
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                input: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    boxShadow:
-                                                        "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                                                    border: "1px solid #e5e7eb",
-                                                }),
-                                                menuList: (base) => ({
-                                                    ...base,
-                                                    padding: "0.5rem 0",
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    color: "#9ca3af",
-                                                    "&:hover": {
-                                                        color: "#6b7280",
-                                                    },
-                                                }),
-                                            }}
-                                            className="mt-2"
-                                        />
-                                        <InputError
-                                            message={errors.tenant}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="mt-6">
-                                        <InputLabel
-                                            htmlFor="group_id"
-                                            value="Assign to Group (Optional)"
-                                        />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
-                                            Assign this room to a group property
-                                        </p>
-                                        <Select
-                                            name="group_id"
-                                            options={groupOptions}
-                                            isClearable
-                                            placeholder="Choose a group..."
-                                            value={
-                                                groupOptions.find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.group_id,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
-                                                setData(
-                                                    "group_id",
-                                                    selected?.value || "",
-                                                )
-                                            }
-                                            styles={{
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    borderColor: state.isFocused
-                                                        ? "#2563eb"
-                                                        : "#d1d5db",
-                                                    backgroundColor: "#ffffff",
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    minHeight: "42px",
-                                                    boxShadow: state.isFocused
-                                                        ? "0 0 0 3px rgb(37 99 235 / 0.1)"
-                                                        : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-                                                    transition: "all 0.2s",
-                                                    color: "#111827",
-                                                    "&:hover": {
-                                                        borderColor:
-                                                            state.isFocused
-                                                                ? "#2563eb"
-                                                                : "#9ca3af",
-                                                    },
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor:
-                                                        state.isSelected
-                                                            ? "#2563eb"
-                                                            : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "#ffffff",
-                                                    color: state.isSelected
-                                                        ? "#ffffff"
-                                                        : "#111827",
-                                                    padding: "0.625rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    cursor: "pointer",
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                input: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    boxShadow:
-                                                        "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                                                    border: "1px solid #e5e7eb",
-                                                }),
-                                                menuList: (base) => ({
-                                                    ...base,
-                                                    padding: "0.5rem 0",
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    color: "#9ca3af",
-                                                    "&:hover": {
-                                                        color: "#6b7280",
-                                                    },
-                                                }),
-                                            }}
-                                            className="mt-2"
-                                        />
-                                        <InputError
-                                            message={errors.groups}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="mt-6">
-                                        <InputLabel
-                                            htmlFor="is_active"
-                                            value="Is it Active?"
-                                        />
-                                        <p className="text-xs text-gray-500 dark:text-gray-450 mt-1 mb-2">
-                                            Is the user active?
-                                        </p>
-                                        <Select
-                                            name="status"
-                                            options={[
-                                                {
-                                                    value: true,
-                                                    label: "True",
-                                                },
-                                                {
-                                                    value: false,
-                                                    label: "False",
-                                                },
-                                            ]}
-                                            placeholder="Choose a status..."
-                                            value={
-                                                [
-                                                    {
-                                                        value: true,
-                                                        label: "True",
-                                                    },
-                                                    {
-                                                        value: false,
-                                                        label: "False",
-                                                    },
-                                                ].find(
-                                                    (opt) =>
-                                                        opt.value ===
-                                                        data.is_active,
-                                                ) || null
-                                            }
-                                            onChange={(selected) =>
-                                                setData(
-                                                    "is_active",
-                                                    selected?.value ?? false,
-                                                )
-                                            }
-                                            styles={{
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    borderColor: state.isFocused
-                                                        ? "#2563eb"
-                                                        : "#d1d5db",
-                                                    backgroundColor: "#ffffff",
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    minHeight: "42px",
-                                                    boxShadow: state.isFocused
-                                                        ? "0 0 0 3px rgb(37 99 235 / 0.1)"
-                                                        : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-                                                    transition: "all 0.2s",
-                                                    color: "#111827",
-                                                    "&:hover": {
-                                                        borderColor:
-                                                            state.isFocused
-                                                                ? "#2563eb"
-                                                                : "#9ca3af",
-                                                    },
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor:
-                                                        state.isSelected
-                                                            ? "#2563eb"
-                                                            : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "#ffffff",
-                                                    color: state.isSelected
-                                                        ? "#ffffff"
-                                                        : "#111827",
-                                                    padding: "0.625rem 0.75rem",
-                                                    fontSize: "0.875rem",
-                                                    cursor: "pointer",
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                input: (base) => ({
-                                                    ...base,
-                                                    color: "#111827",
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    borderRadius: "0.5rem",
-                                                    boxShadow:
-                                                        "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                                                    border: "1px solid #e5e7eb",
-                                                }),
-                                                menuList: (base) => ({
-                                                    ...base,
-                                                    padding: "0.5rem 0",
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    color: "#9ca3af",
-                                                    "&:hover": {
-                                                        color: "#6b7280",
-                                                    },
-                                                }),
-                                            }}
-                                            className="mt-2"
-                                        />
-                                        <InputError
-                                            message={errors.is_active}
-                                            className="mt-2"
-                                        />
-                                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Amount */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="amount"
+                                        value="Amount"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Assign a bill to a tenant.
+                                    </p>
+                                    <TextInput
+                                        id="amount"
+                                        type="number"
+                                        name="amount"
+                                        value={data.amount}
+                                        className="mt-2 block w-full"
+                                        placeholder="₱3000"
+                                        onChange={(e) => {
+                                            setData("amount", e.target.value);
+                                        }}
+                                    />
+                                    <InputError
+                                        message={errors.amount}
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                {/* Billing Date */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="billing_date"
+                                        value="Billing Date"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Assign a billing date for this invoice.
+                                    </p>
+                                    <TextInput
+                                        id="billing_date"
+                                        type="date"
+                                        name="billing_date"
+                                        value={data.billing_date}
+                                        className="mt-2 block w-full"
+                                        onChange={(e) => {
+                                            setData(
+                                                "billing_date",
+                                                e.target.value,
+                                            );
+                                        }}
+                                    />
+                                    <InputError
+                                        message={errors.billing_date}
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                {/* Due Date */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="due_date"
+                                        value="Due Date"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Assign a due date for this billing
+                                        invoice.
+                                    </p>
+                                    <TextInput
+                                        id="due_date"
+                                        type="date"
+                                        name="due_date"
+                                        value={data.due_date}
+                                        className="mt-2 block w-full"
+                                        onChange={(e) => {
+                                            setData("due_date", e.target.value);
+                                        }}
+                                    />
+                                    <InputError
+                                        message={errors.due_date}
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                {/* Status */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="status"
+                                        value="Status"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Is the invoice paid?
+                                    </p>
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        value={data.status}
+                                        onChange={(e) =>
+                                            setData("status", e.target.value)
+                                        }
+                                        className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                    >
+                                        <option value="">
+                                            Choose a status...
+                                        </option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Overdue">Overdue</option>
+                                    </select>
+                                    <InputError
+                                        message={errors.status}
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                {/* Tenant */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="tenant_id"
+                                        value="Tenant"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Assign this invoice to a tenant.
+                                    </p>
+                                    <select
+                                        id="tenant_id"
+                                        name="tenant_id"
+                                        value={data.tenant_id}
+                                        onChange={(e) =>
+                                            setData("tenant_id", e.target.value)
+                                        }
+                                        className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                    >
+                                        <option value="">
+                                            Choose a tenant...
+                                        </option>
+                                        {tenantOptions.map((tenant) => (
+                                            <option
+                                                key={tenant.value}
+                                                value={tenant.value}
+                                            >
+                                                {tenant.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError
+                                        message={errors.tenant_id}
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                {/* Group */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="group_id"
+                                        value="Assign to Group (Optional)"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Assign this invoice to a group property.
+                                    </p>
+                                    <select
+                                        id="group_id"
+                                        name="group_id"
+                                        value={data.group_id}
+                                        onChange={(e) =>
+                                            setData("group_id", e.target.value)
+                                        }
+                                        className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                    >
+                                        <option value="">
+                                            Choose a group...
+                                        </option>
+                                        {groupOptions.map((group) => (
+                                            <option
+                                                key={group.value}
+                                                value={group.value}
+                                            >
+                                                {group.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError
+                                        message={errors.group_id}
+                                        className="mt-2"
+                                    />
                                 </div>
                             </div>
+
+                            {/* Description - Full Width */}
+                            <div className="mt-6">
+                                <InputLabel
+                                    htmlFor="description"
+                                    value="Description"
+                                />
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                    Add additional details about the invoice.
+                                </p>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    value={data.description}
+                                    rows="5"
+                                    className="mt-2 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition duration-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                                    placeholder="Add details about the invoice"
+                                    onChange={(e) =>
+                                        setData("description", e.target.value)
+                                    }
+                                />
+                                <InputError
+                                    message={errors.description}
+                                    className="mt-2"
+                                />
+                            </div>
+
+                            {/* Buttons */}
                             <div className="mt-8 flex items-center gap-4">
                                 <PrimaryButton
                                     type="submit"
@@ -432,9 +271,9 @@ export default function Create({ groups, tenants }) {
                                 >
                                     {processing
                                         ? "Creating..."
-                                        : "Create Tenant"}
+                                        : "Create Invoice"}
                                 </PrimaryButton>
-                                <Link href={route("room.index")}>
+                                <Link href={route("invoice.index")}>
                                     <SecondaryButton type="button">
                                         Cancel
                                     </SecondaryButton>
