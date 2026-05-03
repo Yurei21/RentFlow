@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PaymentResource;
 use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
@@ -10,6 +11,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TenantResource;
 use App\Models\Group;
 use App\Models\GroupMembers;
+use App\Models\Payment;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Auth;
 
@@ -65,7 +67,7 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request)
     {
         $data = $request->validated();
-        $data['receipt_number'] = random_int(5, 10);
+        $data['receipt_number'] = random_int(1000, 100000000);
         if($data['group_id']) {
             $role = GroupMembers::getUserRole(Auth::id(), $data['group_id']);
             $canStore = in_array($role, [
@@ -93,8 +95,11 @@ class InvoiceController extends Controller
     {
         $this->authorize('view', $invoice);
 
+        $payments = Payment::where('invoice_id', $invoice->id)->get();
+
         return inertia('Invoices/Show', [
-            'invoice' => new InvoiceResource($invoice)
+            'invoice' => new InvoiceResource($invoice),
+            'payments' => $payments->map(fn($payment) => new PaymentResource($payment))
         ]);
     }
 
@@ -121,11 +126,12 @@ class InvoiceController extends Controller
     {
         $this->authorize('update', $invoice);
         $data = $request->validated();
+        $receipt = $invoice->receipt_number;
         $data['modified_by'] = Auth::id();
 
         $invoice->update($data);
 
-        return to_route('invoice.index')->with('success', "Invoice {$data->receipt_number} has been updated");
+        return to_route('invoice.index')->with('success', "Invoice {$receipt} has been updated");
     }
 
     /**

@@ -8,11 +8,11 @@ import { Head, Link, router, useForm } from "@inertiajs/react";
 
 export default function Edit({ invoice, groups, tenants }) {
     const { data, setData, put, processing, errors, reset } = useForm({
-        tenant_id: invoice.tenant_id || "",
+        tenant_id: invoice.tenant_id?.id ?? "",
         amount: invoice.amount || "",
-        billing_date: invoice.billing_date ||  "",
-        due_date: invoice.due_Date || "",
-        status: invoice.status ||  "",
+        billing_date: invoice.billing_date || "",
+        due_date: invoice.due_date || "",
+        status: invoice.status || "",
         description: invoice.description || "",
         group_id: invoice.group_id || "",
     });
@@ -20,7 +20,7 @@ export default function Edit({ invoice, groups, tenants }) {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        post(route("invoice.update"));
+        put(route("invoice.update", invoice.id));
     };
 
     const groupOptions = groups.map((groups) => ({
@@ -38,7 +38,7 @@ export default function Edit({ invoice, groups, tenants }) {
             header={
                 <div className="flex flex-col justify-between">
                     <h2 className="text-3xl font-semibold leading-tight text-gray-800 dark:text-gray-200 ">
-                        Edit invoice {$invoice.receipt_number}
+                        Edit invoice {invoice.receipt_number}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                         Add an invoice for a tenant.

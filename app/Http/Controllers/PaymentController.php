@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -13,7 +14,14 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $this->authorize('viewAny', Payment::class);
+
+        $query = Payment::query()->with(['group.users', 'createdBy', 'updatedBy'])->where(function ($q) use ($user) {
+            $q->where('created_by', $user->id)->orWhereHas('group.users', function ($q2) use ($user) {
+                $q2->where('user_id', $user->id);
+            });
+        });
     }
 
     /**
