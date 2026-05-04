@@ -22,6 +22,13 @@ class PaymentController extends Controller
                 $q2->where('user_id', $user->id);
             });
         });
+
+        $sortDirection = request('sortDirection', 'desc');
+        $sortField = request('sortField', 'created_at');
+
+        if(request('search')) {
+            $query->where("");
+        }
     }
 
     /**
