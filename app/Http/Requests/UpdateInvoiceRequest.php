@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +29,15 @@ class UpdateInvoiceRequest extends FormRequest
             'amount' => ['required', 'numeric'],
             'billing_date' => ['required', 'date', 'after_or_equal:today'],
             'due_date' => ['required', 'date', 'after_or_equal:today'],
-            'status' => ['required', Rule::in(['Pending', 'Paid', 'Overdue'])],
+            'status' => [
+                'required',
+                Rule::in(['Pending', 'Paid', 'Overdue']),
+                function ($attribute, $value, $fail) {
+                    if ($value === 'Overdue' && Carbon::parse($this->due_date)->isAfter(now())) {
+                        $fail('Status cannot be "Overdue" when the due date is in the future.');
+                    }
+                }
+            ],
             'description' => ['required', 'string', 'min:5', 'max:150'],
         ];
     }

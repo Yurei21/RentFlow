@@ -6,6 +6,20 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $receipt_number
+ * @property \App\Models\Tenant $tenant
+ * @property float $amount
+ * @property string $billing_date
+ * @property string $due_date
+ * @property string $status
+ * @property string $description
+ * @property \App\Models\User $createdBy
+ * @property \App\Models\User $updatedBy
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class InvoiceResource extends JsonResource
 {
     public static $wrap = null;

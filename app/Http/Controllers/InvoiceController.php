@@ -34,7 +34,10 @@ class InvoiceController extends Controller
         $sortField = request('sort_field', 'created_at');
 
         if(request('search')) {
-            $query->where("description", "like", "%" . request("search") . "%");
+            $search = request('search');
+            $query->where('receipt_number', 'like', "%{$search}%")
+                ->orWhere('id', $search)
+                ->orWhere('description', $search);
         }
 
         $invoices = $query->orderBy($sortField, $sortDirection)->paginate(20)->onEachSide(1);
