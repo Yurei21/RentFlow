@@ -104,7 +104,7 @@ export default function Index({ payments, queryParams = null, success }) {
                     </div>
 
                     <Link
-                        href={route("invoice.create")}
+                        href={route("payment.create")}
                         className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 py-2.5 px-5 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 font-semibold whitespace-nowrap"
                     >
                         <svg

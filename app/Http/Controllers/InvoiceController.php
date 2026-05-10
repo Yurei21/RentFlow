@@ -40,7 +40,7 @@ class InvoiceController extends Controller
                 ->orWhere('description', $search);
         }
 
-        $invoices = $query->orderBy($sortField, $sortDirection)->paginate(20)->onEachSide(1);
+        $invoices = $query->with('tenant')->orderBy($sortField, $sortDirection)->paginate(20)->onEachSide(1);
 
         return inertia('Invoices/Index', [
             'invoices' => InvoiceResource::collection($invoices),
@@ -98,7 +98,7 @@ class InvoiceController extends Controller
     {
         $this->authorize('view', $invoice);
 
-        $payments = Payment::where('invoice_id', $invoice->id)->get();
+        $payments = Payment::with(['invoice', 'createdBy', 'modifiedBy'])->where('invoice_id', $invoice->id)->get();
 
         return inertia('Invoices/Show', [
             'invoice' => new InvoiceResource($invoice),

@@ -14,6 +14,7 @@ class Payment extends Model
     protected $fillable = [
         'invoice_id',
         'amount_paid',
+        'tenant_id',
         'group_id',
         'payment_date',
         'payment_method',
@@ -25,6 +26,11 @@ class Payment extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
     public function group(): BelongsTo

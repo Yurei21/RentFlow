@@ -31,6 +31,8 @@ class PaymentResource extends JsonResource
         return [
             'id' => $this->id,
             'invoice' => new InvoiceResource($this->invoice),
+            'group' => new GroupResource($this->group),
+            'tenant' => new TenantResource($this->tenant),
             'amount_paid' => $this->amount_paid,
             'payment_date' => $this->payment_date,
             'payment_method' => $this->payment_method,
