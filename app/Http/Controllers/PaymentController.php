@@ -49,7 +49,7 @@ class PaymentController extends Controller
             'success' => session('success'),
         ]);
     }
-
+ 
     /**
      * Show the form for creating a new resource.
      */
