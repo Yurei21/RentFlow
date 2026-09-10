@@ -79,7 +79,7 @@ export default function Index({ rooms, queryParams = null, success }) {
 
         router.visit(route("room.destroy", roomToDelete.id), {
             method: "delete",
-            preserveScroll: false,
+            preserveScroll: true,
             preserveState: false,
         });
         setShowDeleteModal(false);

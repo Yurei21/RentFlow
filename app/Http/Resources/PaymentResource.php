@@ -17,6 +17,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property \App\Models\User $updatedBy
  * @property string $created_at
  * @property string $updated_at
+ * @property \App\Models\Group $group
+ * @property \App\Models\Tenant $tenant
  */
 class PaymentResource extends JsonResource
 {

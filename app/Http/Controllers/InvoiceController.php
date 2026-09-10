@@ -98,7 +98,7 @@ class InvoiceController extends Controller
     {
         $this->authorize('view', $invoice);
 
-        $payments = Payment::with(['invoice', 'createdBy', 'modifiedBy'])->where('invoice_id', $invoice->id)->get();
+        $payments = Payment::with(['invoice', 'createdBy', 'updatedBy'])->where('invoice_id', $invoice->id)->get();
 
         return inertia('Invoices/Show', [
             'invoice' => new InvoiceResource($invoice),

@@ -10,7 +10,6 @@ export default function Pagination({ links }) {
             <div className="inline-flex px-10 items-center space-x-1 rounded-lg border border-surface-200 bg-white p-2 dark:border-surface-700 dark:bg-surface-800">
                 {links.map((link) => (
                     <Link
-                        preserveScroll
                         href={link.url || ""}
                         key={link.label}
                         className={
