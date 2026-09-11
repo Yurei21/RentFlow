@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="public/Logo.png" width="180" alt="RentFlow logo">
+    <img src="public/logo.png" width="180" alt="RentFlow logo">
 </p>
 
 <h1 align="center">RentFlow</h1>
