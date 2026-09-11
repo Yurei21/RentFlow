@@ -2,19 +2,19 @@ services:
   postgres:
     build: .
     container_name: rentflow-psql
+
     environment:
-      DB_CONNECTION: ${DB_CONNECTION}
-      DB_HOST: ${DB_HOST}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_SCHEMA: ${DB_SCHEMA}
-      DB_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE:-rentflow}
+
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
+
     restart: unless-stopped
 
 volumes:
-  postgres_data: 
+  postgres_data:
