@@ -18,8 +18,10 @@ class RoomFactory extends Factory
     {
         return [
             'room_name' => fake()->sentence(),
-            'created_by' => 2,
-            'modified_by' => 2,
+            'monthly_price'=> fake()->numberBetween(1000, 6000),
+            'room_type' => 'Studio Type',
+            'created_by' => 1,
+            'modified_by' => 1,
         ];
     }
 }

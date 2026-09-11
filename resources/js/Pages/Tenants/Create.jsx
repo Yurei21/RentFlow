@@ -10,7 +10,7 @@ export default function Create({ groups, rooms }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         room_id: "",
         tenant_name: "",
-        is_active: false,
+        is_active: true,
         group_id: "",
     });
 

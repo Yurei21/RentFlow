@@ -55,7 +55,18 @@ class TenantController extends Controller
         $this->authorize('create', Tenant::class);
         $user = Auth::user();
         $groups = Group::where('created_by', $user->id)->get();
-        $rooms = Room::where('created_by', $user->id)->get();
+        $rooms = Room::where('created_by', $user->id)
+            ->where('status', 'available')
+            ->get();
+
+        if(!$rooms) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'room_id' => 'The selected room is not available.'
+                ]);
+        }
+
         return inertia("Tenants/Create", [
             'groups' => $groups->map(fn($group) => new GroupResource($group)),
             'rooms' => $rooms->map(fn($room) => new RoomResource($room))
@@ -83,6 +94,13 @@ class TenantController extends Controller
         $data['modified_by'] = Auth::id();
 
         Tenant::create($data);
+
+        $room = Room::findOrFail($data['room_id']);
+
+        $room->update([
+            'status' => 'occupied',
+            'modified_by' => Auth::id(),
+        ]);
 
         return to_route('tenant.index')->with('success', 'Tenant was created');
     }
@@ -162,6 +180,21 @@ class TenantController extends Controller
     {
         $this->authorize('delete', $tenant);
         $name = $tenant->tenant_name;
+
+        $room = Room::findOrFail($tenant->room_id);
+
+        if(!$room) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'room_id' => 'The selected room is not available.'
+                ]);
+        }
+
+        $room->update([
+            'status' => 'available',
+            'modified_by' => Auth::id()
+        ]);
 
         $tenant->delete();
 
