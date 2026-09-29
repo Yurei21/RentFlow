@@ -23,7 +23,7 @@ The application is built with Laravel and presents its authenticated pages throu
 - **Authentication** includes standard login and registration flows, email verification, password changes, and Google OAuth.
 
 ## How It Works
-
+ 
 1. A user signs in or creates an account.
 2. The user creates or selects a group for a property portfolio or project.
 3. Rooms are added to the group with pricing, capacity, type, and status information.
